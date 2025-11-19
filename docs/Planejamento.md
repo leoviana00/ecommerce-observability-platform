@@ -2,7 +2,7 @@
 
 ### 🎯 Objetivo
 
-Criar um ecossistema de microserviços que simula um fluxo completo de compras, com eventos transitando pelo Kafka, e paralelamente uma “malha de observabilidade” composta por microserviços especializados em monitoramento — cada um responsável por uma dimensão específica do sistema, persistindo estados e evitando alertas duplicados.
+Criar um ecossistema de microserviços que simula um fluxo completo de compras, com eventos transitando pelo Kafka, e paralelamente uma “malha de observabilidade” composta por microserviços especializados em monitoramento, cada um responsável por uma dimensão específica do sistema, persistindo estados e evitando alertas duplicados.
 
 ### 🧩 1. STACK PRINCIPAL (Fluxo de Compra)
 
