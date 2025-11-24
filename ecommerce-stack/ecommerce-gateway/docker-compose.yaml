@@ -1,0 +1,32 @@
+version: '3.8'
+
+# Define os serviços (containers) que compõem a aplicação
+services:
+  gateway:
+    # Instrução para construir a imagem Docker a partir do Dockerfile no diretório atual
+    build: .
+    # Mapeia a porta 8080 do container para a porta 8080 da máquina host
+    ports:
+      - 8080:8080
+    # Variáveis de ambiente
+    environment:
+      # Define o perfil Spring ativo como 'local' (útil para application-local.yml)
+      - SPRING_PROFILES_ACTIVE=local
+    # Garante que o gateway só suba após os serviços de produto e inventário estarem rodando
+    depends_on:
+      - product
+      - inventory
+
+  # Serviço de Produto (mockado com um servidor web Alpine simples)
+  product:
+    # Usa uma imagem pública leve para simular o serviço
+    image: alpine/httpd:latest
+    # Expõe a porta 80 do container na porta 8081 da máquina host
+    ports: [8081:80]
+
+  # Serviço de Inventário (mockado com um servidor web Alpine simples)
+  inventory:
+    # Usa uma imagem pública leve para simular o serviço
+    image: alpine/httpd:latest
+    # Expõe a porta 80 do container na porta 8082 da máquina host
+    ports: [8082:80]
