@@ -1,30 +1,13 @@
 server:
   port: 8080
 
-logging:
-  # Garante que o logback-spring.xml seja usado
-  config: classpath:logback-spring.xml
-  level:
-    # Reduz o nível de verbosidade do Spring Cloud Gateway de DEBUG para INFO.
-    # Isso eliminará a maioria dos logs internos detalhados do framework.
-    org.springframework.cloud.gateway: INFO
-    # Garante que o restante do Spring e o Reactor Netty permaneçam em INFO (padrão)
-    org.springframework: INFO
-    reactor.netty: INFO
-
-# === CONFIGURAÇÃO ACTUATOR / MANAGEMENT ===
-management:
-  endpoints:
-    web:
-      # Expõe todos os endpoints do Actuator via web (O 'gateway' está incluído aqui)
-      exposure:
-        include: "*"
-  # Adicionalmente, expõe todos os endpoints para monitoramento interno (se necessário)
-  endpoint:
-    health:
-      show-details: always
-    gateway:
-      enabled: true
+services:
+  product: http://localhost:8081
+  inventory: http://localhost:8082
+  cart: http://localhost:8083
+  order: http://localhost:8084
+  payment: http://localhost:8085
+  notification: http://localhost:8086
 
 spring:
   cloud:
@@ -32,6 +15,15 @@ spring:
       httpclient:
         connect-timeout: 5000
         response-timeout: 5s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
 
 resilience4j:
   circuitbreaker:
