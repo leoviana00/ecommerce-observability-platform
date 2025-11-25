@@ -1,0 +1,70 @@
+spring:
+  application:
+    # Define o nome da aplicação, usado em logs e em serviços de descoberta (e.g., Eureka)
+    name: product-service
+
+  datasource:
+    # Configuração para usar o banco de dados em memória H2 (ideal para testes/desenvolvimento rápido)
+    url: jdbc:h2:mem:productdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+    platform: h2 # Especifica o dialeto do DB
+
+  jpa:
+    hibernate:
+      # Estratégia de geração/atualização do esquema do DB:
+      # 'update' tenta atualizar as tabelas existentes; 'create-drop' recria o DB a cada inicialização.
+      ddl-auto: update
+    # Exibe as instruções SQL geradas pelo Hibernate no console
+    show-sql: true
+    properties:
+      hibernate.format_sql: true # Formata o SQL exibido para melhor legibilidade
+
+  sql:
+    init:
+      # Garante que scripts SQL (como schema.sql e data.sql) sejam executados sempre
+      mode: always
+
+  kafka:
+    # Endereço dos servidores Kafka (onde o Produtor e o Consumidor se conectarão)
+    bootstrap-servers: localhost:9092
+    
+    # --- Configurações do Consumidor Kafka (para ProductEventConsumer) ---
+    consumer:
+      # ID do grupo de consumidores. Garante que as mensagens sejam distribuídas corretamente.
+      group-id: product-service 
+      # Define a partir de onde o consumidor deve começar a ler se não houver offset salvo.
+      # 'earliest' lê desde o início, 'latest' lê apenas mensagens novas.
+      auto-offset-reset: earliest 
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      # Deserializador para converter o corpo da mensagem (JSON) em um objeto Java
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        # Permite desserializar classes de pacotes diferentes do pacote Spring (necessário para JsonDeserializer)
+        spring.json.trusted.packages: '*' 
+
+    # --- Configurações do Produtor Kafka (para ProductEventProducer) ---
+    producer:
+      # Serializador para a chave da mensagem
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      # Serializador para o corpo da mensagem (converte o objeto Java em JSON)
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+  jackson:
+    # Configuração para formatar o JSON de saída com indentação (mais legível)
+    serialization:
+      INDENT_OUTPUT: true
+
+server:
+  # Porta HTTP onde a aplicação será executada
+  port: 8081
+
+logging:
+  level:
+    # Nível de log padrão
+    root: INFO
+    # Nível de log detalhado para o Kafka (útil para debug de conexão)
+    org.springframework.kafka: DEBUG
+    # Nível de log detalhado para os seus pacotes (onde está o código da aplicação)
+    io.viana.product_service: DEBUG
