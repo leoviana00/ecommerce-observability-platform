@@ -306,3 +306,5 @@ A ideia é obterno final:
 ✔ Estado persistido e analisável
 
 ✔ Ideal para estudos de DevOps + SRE + Arquitetura Distribuída
+
+
