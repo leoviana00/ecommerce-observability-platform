@@ -4,3 +4,19 @@ Plataforma basica de e-commerce orientada a eventos, desenvolvida em Java + Spri
 ## 📌 Planejamento
 
 - [Ideia e planejamento inicial para o projeto](./docs/Planejamento.md)
+
+## 🧱 Arquittura
+
+- [Arquitetura da stack ecommerce](./docs/infra-stack/ecommerce-architecture.md)
+
+## 🚀 Roadmap
+
+- [Roadmap inicial](./docs/Roadmap.md)
+
+## 📝 Anotações
+
+- [Anotaçõe realizadas durante o estudo](./docs/Note.md)
+
+## 🛠 Checklist de débitos técnicos
+
+- [Meus débitos técnicos](./docs/melhorias.md)
