@@ -9,6 +9,10 @@ Plataforma basica de e-commerce orientada a eventos, desenvolvida em Java + Spri
 
 - [Arquitetura da stack ecommerce](./docs/infra-stack/ecommerce-architecture.md)
 
+## 🌐 Fluxo - Cliente Pedido
+
+- [Fluxo do pedido do produto](./docs/fluxo_pedido.md)
+
 ## 🚀 Roadmap
 
 - [Roadmap inicial](./docs/Roadmap.md)

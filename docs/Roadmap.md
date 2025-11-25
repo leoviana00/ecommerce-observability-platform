@@ -2,13 +2,13 @@
 
 ## 📦 Desenvolvimento dos serviços - Stack Ecommerce
 
-- [ ] [ecommerce-gateway → API Gateway, ponto de entrada do cliente.](./ecommerce-stack/ecommerce-gateway.md)
-- [ ] [product-service → base de tudo, todos os outros serviços consultam produtos](./ecommerce-stack/product-service.md)
-- [ ] [inventory-service → depende do product; usado por cart, order, payment](./ecommerce-stack/inventory-service.md)
-- [ ] [cart-service → depende de product + inventory](./ecommerce-stack/cart-service.md)
-- [ ] [order-service → depende de cart + product + inventory](./ecommerce-stack/order-service.md)
-- [ ] [payment-service → depende de order](./ecommerce-stack/payment-service.md)
-- [ ] [notification-service → depende de order/payment (eventos)](./ecommerce-stack/notification-service.md)
+- [ ] [ecommerce-gateway: API Gateway, ponto de entrada do cliente.](./ecommerce-stack/ecommerce-gateway.md)
+- [ ] [product-service: base de tudo, todos os outros serviços consultam produtos](./ecommerce-stack/product-service.md)
+- [ ] [inventory-service: depende do product; usado por cart, order, payment](./ecommerce-stack/inventory-service.md)
+- [ ] [cart-service: depende de product + inventory](./ecommerce-stack/cart-service.md)
+- [ ] [order-service: depende de cart + product + inventory](./ecommerce-stack/order-service.md)
+- [ ] [payment-service: depende de order](./ecommerce-stack/payment-service.md)
+- [ ] [notification-service: depende de order/payment (eventos)](./ecommerce-stack/notification-service.md)
 
 ## Orquestração do fluxo
 
