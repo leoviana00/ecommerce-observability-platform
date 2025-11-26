@@ -1,23 +1,15 @@
 ## 🧠 1. Estrutura Pensada:
 
-1. Gteway Ecommerce
-    - ecommerce-gateway
-2. 📦 Product Service
-    - product-service
-3. 🏬 Inventory Service
-    - invntory-api
-    - invntory-consumer
-4. 🛒 Cart Service
-    - cart-service
-5. 📑 Order Service
-    - order-api
-    - order-aconsumer
-    - order-wrkflow
-6. 💳 Payment Service
-    - payment-api
-    - payment-consumer
-7. 📨 Notification Service
-    - notification-dispatcher
+| #  | Serviço                            | Componentes / Microserviços                   |
+|----|------------------------------------|-----------------------------------------------|
+| 1  | 🌐 Gateway Ecommerce               | ecommerce-gateway                             |
+| 2  | 📦 Product Service                 | product-service                               |
+| 3  | 🏬 Inventory Service               | inventory-api, inventory-consumer             |
+| 4  | 🛒 Cart Service                    | cart-service                                  |
+| 5  | 📑 Order Service                   | order-api, order-consumer, order-workflow     |
+| 6  | 💳 Payment Service                 | payment-api, payment-consumer                 |
+| 7  | 📨 Notification Service            | notification-dispatcher                       |
+
 
 
 > [!NOTE]
@@ -187,13 +179,15 @@ src/main/java/com/seuprojeto/
 
 - Ecommerce Stack:
 
-1. 🌐 Gteway Ecommerce [`ecommerce-gateway`]
-2. 📦 Product Service [`product-service`]
-3. 🏬 Inventory Service[`invntory-service`]
-4. 🛒 Cart Service [`cart-service`]
-5. 📑 Order Service [`order-service`]
-6. 💳 Payment Service [`payment-service`]
-7. 📨 Notification Service [`notification-service`]
+| #  | Serviço                            | Componentes / Microserviços                   |
+|----|------------------------------------|-----------------------------------------------|
+| 1  | 🌐 Gateway Ecommerce               | ecommerce-gateway                             |
+| 2  | 📦 Product Service                 | product-service                               |
+| 3  | 🏬 Inventory Service               | inventory-service                             |
+| 4  | 🛒 Cart Service                    | cart-service                                  |
+| 5  | 📑 Order Service                   | order-service                                 |
+| 6  | 💳 Payment Service                 | ppayment-service                              |
+| 7  | 📨 Notification Service            | notification-service                          |
 
 ## 📊 8. RESUMO Monitoring Stack
 
