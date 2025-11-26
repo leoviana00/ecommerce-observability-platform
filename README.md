@@ -9,6 +9,10 @@ Plataforma basica de e-commerce orientada a eventos, desenvolvida em Java + Spri
 
 - [Arquitetura da stack ecommerce](./docs/infra-stack/ecommerce-architecture.md)
 
+## 🧩 Padronização Kafka
+
+- [Padronização de implementação de Producers e Consumers Kafka em todos os microserviços da plataforma](./docs/Padronizacao_eventos_kafka.md)
+
 ## 🌐 Fluxo - Cliente Pedido
 
 - [Fluxo do pedido do produto](./docs/fluxo_pedido.md)
