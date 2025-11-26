@@ -44,13 +44,13 @@ Priorizando a base e o fluxo principal:
 
 ## 📐 Fase 1: Base e Design (Sprints 1-3)
 
-[ ] **ecommerce-architecture** (Design, Diagramas, Padrões de Microserviços)
+[x] **ecommerce-architecture** (Design, Diagramas, Padrões de Microserviços)
 
 [ ] **ecommerce-infra** (Cluster, Rede, Banco de Dados, CI/CD Básico)
 
-[ ] **ecommerce-gateway** (Gateway API inicial)
+[x] **ecommerce-gateway** (Gateway API inicial)
 
-[ ] **product-service** (Serviço de Produto - Base do catálogo)
+[x] **product-service** (Serviço de Produto - Base do catálogo)
 
 ## 🛒 Fase 2: Fluxo de Compra Principal (Sprints 4-8)
 
