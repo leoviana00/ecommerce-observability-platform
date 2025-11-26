@@ -1,55 +1,58 @@
-✅ 1. Estrutura Pensada:
+## 🧠 1. Estrutura Pensada:
 
-1. [ Gteway Ecommerce]
-  - ecommerce-gateway
-2. [📦 Product Service]
-  - product-service
-3. [🏬 Inventory Service]
-  - invntory-api
-  - invntory-consumer
-4. [🛒 Cart Service]
-  - cart-service
-5. [📑 Order Service]
-  - order-api
-  - order-aconsumer
-  - order-wrkflow
-6. [💳 Payment Service]
-  - payment-api
-  - payment-consumer
-7. [📨 Notification Service]
-  - notification-dispatcher
+1. Gteway Ecommerce
+    - ecommerce-gateway
+2. 📦 Product Service
+    - product-service
+3. 🏬 Inventory Service
+    - invntory-api
+    - invntory-consumer
+4. 🛒 Cart Service
+    - cart-service
+5. 📑 Order Service
+    - order-api
+    - order-aconsumer
+    - order-wrkflow
+6. 💳 Payment Service
+    - payment-api
+    - payment-consumer
+7. 📨 Notification Service
+    - notification-dispatcher
 
 
 > [!NOTE]
 > 📝 Visão orientada a eventos + API + consumidores.
 > 📝 Cuidado para não misturar tudo dentro de um único serviço.
 
-⚠️ 2. O que precisa ser ajustado antes de avançarmos
+## 🚨 2. O problema
 
-Inicialmente foi pensado em separar os serviços API dos consumidores:
+- Inicialmente foi pensado em separar os serviços API dos consumidores:
 
 - Exemplo:
   - payment-api
   - payment-consumer
 
-Porém pesquisando um pouco, vi que isso funciona, mas não é o padrão mais comum em microserviços modernos.
+> [!CAUTION]
+> 🛑 Pesquisando um pouco, vi que isso funciona, mas não é o padrão mais comum em microserviços modernos.
 
-- Por quê?
-  - Porque isso cria 2 deployments por bounded context, o que: duplica build, config e CI/CD
-  - depende de comunicação via banco ou Kafka entre dois “sub-serviços”
-  - não traz ganhos reais
+> [!TIP]
+> 🤔 Por quê?
+>  - Porque isso cria 2 deployments por bounded context, o que: duplica build, config e CI/CD
+>  - depende de comunicação via banco ou Kafka entre dois “sub-serviços”
+>  - não traz ganhos reais
 
-- O padrão recomendado:
-  - Cada domínio possuir um único microserviço, contendo:
-  - Camada API (controllers REST)
-  - Camada consumer Kafka
-  - Camada producer Kafka
-  - Camada de lógica de domínio
-  - Infra (config, security, actuator, metrics)
+> [!TIP]
+> 💡 O padrão recomendado:
+>  - Cada domínio possuir um único microserviço, contendo:
+>  - Camada API (controllers REST)
+>  - Camada consumer Kafka
+>  - Camada producer Kafka
+>  - Camada de lógica de domínio
+>  - Infra (config, security, actuator, metrics)
 
-Assim tudo fica autônomo, escalável individualmente e consistente.
+- Assim tudo fica autônomo, escalável individualmente e consistente.
 
-🧱 3. Estrutura RECOMENDADA para a stack de eCommerce
+## 🧱 3. Estrutura Repensada para a stack de eCommerce
 
 - Estrutura final (limpa e escalável)
 
@@ -84,12 +87,14 @@ ecommerce-stack/
 └── notification-service/
 ```
 
-🟦 4. Processo de transformação da estrutura
+## 🟦 4. Processo de transformação da estrutura
 
 Mapeamento do que foi pensado inicialmente e → e como fica na estrutura pensada agora.
 
+
 🔵 product-service/
 
+```console
 product-service/
   /controller
   /consumer
@@ -97,10 +102,12 @@ product-service/
   /service
   /model
   /config
+```
+
 
 🟣 inventory-api + inventory-consumer
 
-→ viram um único serviço:
+- Viram um único serviço:
 
 ```console
 /
@@ -114,47 +121,43 @@ inventory-service  controller/
 
 🟡 order-api + order-consumer + order-workflow
 
-→ tudo dentro de:
+- Tudo dentro de:
 ```console
 order-service/
   controller/
   consumer/
-  workflow/   ← aqui entra orquestração
+  workflow/  ---> aqui entra orquestração
 ```
 
 🟢 payment-api + payment-consumer
 
-→ vira:
+- Vira:
 ```console
 payment-service/
 ```
 
 Com:
 
-controller → iniciar pagamento
-
-consumer → processar eventos
-
-producer → eventos de pagamento aprovado/negado
+- controller: iniciar pagamento
+- consumer: processar eventos
+- producer: eventos de pagamento aprovado/negado
 
 🟠 notification-dispatcher
 
-→ vira:
+- Vira:
 ```console
 notification-service/
 ```
 
 Com:
 
-consumer → payment-approved, order-created
+- consumer: payment-approved, order-created
+- producer: customer-notified, vendor-notified
+- adapters: email, webhook, telegram, sms, firebase (futuro)
 
-producer → customer-notified, vendor-notified
+## 🏗️ 5. Estrutura POR DENTRO de cada serviço
 
-adapters → email, webhook, telegram, sms, firebase (futuro)
-
-🏗️ 5. Estrutura POR DENTRO de cada serviço
-
-Para garantir padronização entre os 7 microserviços:
+- Para garantir padronização entre os 7 microserviços:
 
 ```java
 src/main/java/com/seuprojeto/
@@ -168,7 +171,7 @@ src/main/java/com/seuprojeto/
   config/
 ```
 
-🚀 6. Benefícios imediatos dessa organização
+## 🚀 6. Benefícios imediatos dessa organização
 
 ```console
 ✔ Cada serviço é autônomo
@@ -180,30 +183,24 @@ src/main/java/com/seuprojeto/
 ✔ Mais escalável
 ```
 
-🧩 7. RESUMO:
+## 🧩 7. RESUMO Ecommerce Stack:
 
-1. [ Gteway Ecommerce]
-  - ecommerce-gateway
-2. [📦 Product Service]
-  - product-service
-3. [🏬 Inventory Service]
-  - invntory-service
-4. [🛒 Cart Service]
-  - cart-service
-5. [📑 Order Service]
-  - order-service
-6. [💳 Payment Service]
-  - payment-service
-7. [📨 Notification Service]
-  - notification-service
+- Ecommerce Stack:
 
-## Stack de monitoramento
+1. 🌐 Gteway Ecommerce [`ecommerce-gateway`]
+2. 📦 Product Service [`product-service`]
+3. 🏬 Inventory Service[`invntory-service`]
+4. 🛒 Cart Service [`cart-service`]
+5. 📑 Order Service [`order-service`]
+6. 💳 Payment Service [`payment-service`]
+7. 📨 Notification Service [`notification-service`]
+
+## 📊 8. RESUMO Monitoring Stack
 
 - Monitoring Stack (Pensar mais na frente)
 
-1. [📊 Monitoring Stack]
-2. [🩺 monitor-health-service]
-3. [⏱️ monitor-lag-service]
-4. [👀 monitor-consumer-presence-service]
-5. [🧠 monitor-state-manager]
-6. [🚨 monitor-alert-dispatcher]
+1. 🩺 monitor-health-service
+2. ⏱️ monitor-lag-service
+3. 👀 monitor-consumer-presence-service
+4. 🧠 monitor-state-manager
+5. 🚨 monitor-alert-dispatcher
