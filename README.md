@@ -5,9 +5,17 @@ Plataforma basica de e-commerce orientada a eventos, desenvolvida em Java + Spri
 
 - [Ideia e planejamento inicial para o projeto](./docs/Planejamento.md)
 
-## 🧱 Arquittura
+## 🧱 Arquitetura
 
-- [Arquitetura da stack ecommerce](./docs/infra-stack/ecommerce-architecture.md)
+- [Arquitetura da stack ecommerce](./docs/ecommerce-stack/ecommerce-architecture.md)
+
+- [Arquitetura da stack de observabilidade](./docs/monitoring-stack/observability-architecture.md)
+
+- [Arquitetura da stack de infraestrutura](./docs/infra-stack/ecommerce-infra.md)
+
+## 📘 SkyFolder  
+
+- [Padrão de Microserviços para o projeto eCommerce-Observability](./docs/Skyfolder.md)
 
 ## 🧩 Padronização Kafka
 
@@ -21,7 +29,7 @@ Plataforma basica de e-commerce orientada a eventos, desenvolvida em Java + Spri
 
 - [Roadmap inicial](./docs/Roadmap.md)
 
-## 📝 Anotações
+## 📝 Anotações [Sera removido posteriormente]
 
 - [Anotaçõe realizadas durante o estudo](./docs/Note.md)
 
