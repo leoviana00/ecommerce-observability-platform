@@ -1,39 +1,43 @@
 package io.viana.product_service.producer;
 
-import org.springframework.kafka.core.KafkaTemplate; // Importa a classe principal para enviar mensagens ao Kafka
-import org.springframework.stereotype.Component; // Marca a classe para ser gerenciada pelo Spring
+// Importações necessárias
+import io.viana.product_service.dto.ProductCreatedEvent;
+import io.viana.product_service.model.ProductEntity;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Component;
 
-import io.viana.product_service.model.ProductEntity; // Importa o modelo de dados a ser enviado
-
-/**
- * Componente que encapsula toda a lógica de produção (envio) de eventos para o Kafka.
- * Isso mantém o ProductService limpo e focado apenas na lógica de negócio.
- */
+// Habilita o logging
+@Slf4j
+// Marca a classe como um componente Spring, permitindo que seja injetada
 @Component
+// Gera um construtor para injeção de dependência do KafkaTemplate
+@RequiredArgsConstructor
 public class ProductEventProducer {
 
-    // O KafkaTemplate é a ferramenta do Spring para interagir com o Kafka.
-    private final KafkaTemplate<String, ProductEntity> kafkaTemplate;
+    // Injeção de dependência do KafkaTemplate
+    private final KafkaTemplate<String, ProductCreatedEvent> kafkaTemplate;
+    
+    // Nome do tópico do Kafka
+    private static final String TOPIC = "product-created";
 
     /**
-     * Construtor da classe.
-     * O Spring injeta automaticamente o KafkaTemplate configurado (visto no KafkaConfig)
-     * via Injeção de Dependência (DI).
-     * @param kafkaTemplate A instância do template Kafka injetada pelo Spring.
+     * Envia um evento de criação de produto para o tópico do Kafka.
      */
-    public ProductEventProducer(KafkaTemplate<String, ProductEntity> kafkaTemplate) {
-        this.kafkaTemplate = kafkaTemplate;
-    }
+    public void sendProductCreated(ProductEntity product, Integer initialStock) {
 
-    /**
-     * Método responsável por enviar um evento de 'Produto Criado' para o Kafka.
-     * @param product A entidade ProductEntity que foi recém-criada ou atualizada.
-     */
-    public void sendProductCreated(ProductEntity product) {
-        // 1. "product-created": É o nome do tópico Kafka para onde a mensagem será enviada.
-        // 2. product: É o payload (valor) da mensagem, que será serializado (JSON, no nosso caso).
-        // NOTA: Para um sistema mais robusto, é recomendado usar product.getId().toString() como a chave (key)
-        // para garantir o ordenamento na mesma partição (se necessário).
-        kafkaTemplate.send("product-created", product);
+        // 1. Cria o objeto de evento (DTO) a partir dos dados do produto
+        ProductCreatedEvent event = ProductCreatedEvent.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .initialStock(initialStock)
+                .build();
+
+        // 2. Envia a mensagem (evento) para o tópico especificado no Kafka
+        kafkaTemplate.send(TOPIC, event);
+
+        // 3. Loga a informação de que o evento foi enviado
+        log.info("📤 Evento enviado para Kafka: {}", event);
     }
 }
