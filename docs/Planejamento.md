@@ -1,310 +1,198 @@
-## ✅ Projeto: eCommerce Event-Driven + Observability Mesh
+## 📘 Planejamento Básico do Projeto
 
-### 🎯 Objetivo
+eCommerce Event-Driven + Observability Mesh
 
-Criar um ecossistema de microserviços que simula um fluxo completo de compras, com eventos transitando pelo Kafka, e paralelamente uma “malha de observabilidade” composta por microserviços especializados em monitoramento, cada um responsável por uma dimensão específica do sistema, persistindo estados e evitando alertas duplicados.
+Planejamento macro do projeto, seus componentes fundamentais, o fluxo de domínio, padrões arquiteturais e a organização da plataforma.
+Ele serve como referência inicial para desenvolvimento, expansão e governança técnica.
 
-### 🧩 1. STACK PRINCIPAL (Fluxo de Compra)
+## 1. 🎯 Objetivo Geral
 
-Uma arquitetura simples, modular e 100% orientada a eventos:
+Construir um ecossistema completo de microserviços simulando uma plataforma de eCommerce, baseado em:
 
-```console
-┌────────────────────────┐
-│     API Gateway        │
-└──────────┬─────────────┘
-           │
-     (REST chamadas)
-           ▼
-┌────────────────────────┐
-│   Product Service      │  → Consulta catálogo
-└────────────────────────┘
-┌────────────────────────┐
-│ Inventory Service      │  → Valida e debita estoque
-└────────────────────────┘
-┌────────────────────────┐
-│ Cart Service           │  → Monta carrinho
-└────────────────────────┘
-┌────────────────────────┐
-│ Order Service          │  → Cria pedido / publica evento
-└────────────────────────┘
-┌────────────────────────┐
-│ Payment Service        │  → Simula pagamento
-└────────────────────────┘
-┌────────────────────────┐
-│ Notification Service   │  → Notifica cliente e vendor
-└────────────────────────┘
+  - Arquitetura event-driven usando Apache Kafka
+  - Microserviços independentes e escaláveis
+  - Observabilidade distribuída com uma Monitoring Mesh especializada
+  - Padrões de código consistentes via SkyFolder (boilerplate oficial)
+  - Deploy modular e autonomia por bounded context
 
+O objetivo é permitir:
+
+  - Experimentação avançada com eventos
+  - Testes de resiliência e observabilidade
+  - Evolução incremental do domínio
+  - Integração entre serviços com baixo acoplamento
+
+
+## 2. 🧩 Estrutura Geral da Plataforma
+
+A plataforma é dividida em 3 stacks principais:
+
+### `ecommerce-stack`
+
+Fluxos que representam o funcionamento do eCommerce:
+
+| Serviço                | Responsabilidade Principal                                    |
+|------------------------|----------------------------------------------------------------|
+| 📦 product-service     | Catálogo de produtos, criação e publicação do evento `product-created`. |
+| 🏬 inventory-service   | Gestão de estoque: criação inicial, movimentação e validação de disponibilidade. |
+| 🛒 cart-service        | Controle do carrinho de compras: adicionar, remover e consultar itens. |
+| 📑 order-service       | Criação e gerenciamento de pedidos; validações e emissão do evento `order-created`. |
+| 💳 payment-service     | Processamento de pagamentos; emissão de `payment-processed` ou `payment-failed`. |
+| 📨 notification-service| Envio de notificações baseadas em eventos (order, payment). |
+| 🌐 ecommerce-gateway   | Roteamento unificado das requisições; entrada única da plataforma. |
+
+
+### `monitoring-stack` (Observability Mesh)
+
+Serviços especializados, cada um com uma função única:
+
+| Serviço                             | Responsabilidade Principal                                         |
+|------------------------------------|---------------------------------------------------------------------|
+| 🩺 monitor-health-service          | Monitoramento de saúde dos microserviços via Actuator (ping, up/down). |
+| ⏱️ monitor-lag-service             | Cálculo e monitoramento de lag em tópicos Kafka por grupo e partição. |
+| 👀 monitor-consumer-presence-service | Verificação da presença/atividade de consumers Kafka (heartbeat operacional). |
+| 🧠 monitor-state-manager            | Armazenamento centralizado do estado dos monitores e deduplicação de alertas. |
+| 🚨 monitor-alert-dispatcher         | Despacho de alertas para canais externos (Telegram, e-mail, webhook). |
+
+
+### `infra-stack`
+
+Infraestrutura e arquitetura:
+
+| Serviço / Componente    | Responsabilidade Principal                                             |
+|--------------------------|------------------------------------------------------------------------|
+| 🐳 docker-compose        | Orquestrar todos os containers locais (Kafka, Zookeeper, serviços auxiliares). |
+| 📡 kafka setup           | Provisionamento do Kafka, tópicos, configurações de brokers e ACLs.   |
+| 📊 observability stack   | Stack de monitoramento: Prometheus, Grafana, Loki, Tempo, exporters e dashboards. |
+| 📚 documentação          | Guia técnico, diagramas C4, instruções de setup, manuais e padrões arquiteturais. |
+
+
+
+## 3. 🔹 Fluxo Básico do Domínio (Happy Path)
+
+Um cliente realiza um pedido seguindo o fluxo:
+
+  1. Criação do produto
+
+    - product-service
+    - Emite evento `product-created`
+
+  2. Criação do estoque inicial
+
+    - inventory-service consome `product-created`
+    - Inicializa o estoque
+
+  3. Cliente adiciona produtos no carrinho
+
+    - cart-service
+    - Pode consultar `inventory-service`
+
+  4. Finaliza o pedido
+
+    - order-service
+    - Valida estoque
+    - Decrementa estoque via evento
+    - Emite `order-created`
+
+  5. Processamento do pagamento
+
+    - payment-service
+    - Emite `payment-processed` ou `payment-failed`
+
+  6. Notificações
+
+    - notification-service consome:
+    - `order-created`
+    - `payment-processed`
+    - `payment-failed`
+
+## 4. 🏗 Padrões Arquiteturais Aplicados
+
+A plataforma segue os seguintes princípios:
+
+| Padrão / Princípio                            | Descrição                                                         |
+| --------------------------------------------- | ----------------------------------------------------------------- |
+| ✔ **Event-Driven Architecture**               | Comunicação assíncrona via eventos Kafka entre todos os serviços. |
+| ✔ **Single Bounded Context por Microserviço** | Cada serviço possui API, lógica, storage e integração próprios.   |
+| ✔ **Observabilidade Nativa**                  | Actuator habilitado por padrão em todos os serviços.              |
+| ✔ **Padronização rígida de diretórios**       | SkyFolder garante uniformidade de código e estrutura.             |
+| ✔ **Package-safe (sem hífens)**               | `order-service` - pacote `order_service`.                         |
+| ✔ **Convenção MainClass**                     | `order-service` - `OrderServiceApplication`.                      |
+
+
+## 5. 📦 Dependências Padrão
+
+Todos os serviços gerados pelo SkyFolder utilizam:
+
+| Dependência                     | Artefato                         | Finalidade / Uso |
+|----------------------------------|----------------------------------|-------------------|
+| ✔ Spring Web                     | spring-boot-starter-web          | APIs REST |
+| ✔ Spring Kafka                   | spring-kafka                     | Producers e Consumers Kafka |
+| ✔ Spring Data JPA                | spring-boot-starter-data-jpa     | Persistência relacional |
+| ✔ H2 Database (runtime)          | com.h2database:h2                | Banco local para dev/testes |
+| ✔ Lombok                         | lombok                            | Redução de boilerplate |
+| ✔ Spring Actuator                | spring-boot-starter-actuator     | Health, metrics, info |
+| ✔ Spring Test                    | spring-boot-starter-test         | JUnit + Mockito |
+
+## 6. 🛠 SkyFolder — Boilerplate Padrão
+
+Gerar serviços via comando:
+
+```bash
+./generate-service.sh <service-name>
 ```
 
-- **Eventos no Kafka**
+Estrutura criada:
 
-Tópicos pensados:
-
-  - product-selected
-  - inventory-checked
-  - cart-updated
-  - order-created
-  - payment-approved
-  - customer-notified
-  - vendor-notified
-
-Cada microserviço:
-
-  - expõe endpoints REST
-  - consome e produz mensagens
-  - possui health check (Spring Boot Actuator)
-  - envia métricas (Micrometer + Prometheus)
-
-### 🧩 2. STACK DE MONITORAMENTO (Observability Mesh)
-
-Ideia: não ter um único microserviço de monitoramento, mas sim um conjunto, cada um com uma responsabilidade específica.
-
-```console
-                         ┌──────────────────────────────┐
-                         │ Monitor State Manager         │
-                         │  - Persiste estados           │
-                         │  - Evita alertas repetidos    │
-                         │  - Publica eventos             │
-                         └──────────────┬───────────────┘
-                                        │(eventos)
-             ┌──────────────────────────┼──────────────────────────┐
-             ▼                          ▼                          ▼
-┌─────────────────────┐   ┌────────────────────────┐   ┌───────────────────────────┐
-│ HealthCheckService  │   │ LagMonitorService      │   │ ConsumerPresenceService   │
-│ - Verifica /health  │   │ - Lê lag de grupos     │   │ - Detecta consumidores    │
-└─────────────────────┘   │ - Kafka AdminClient    │   │   offline                 │
-                          └────────────────────────┘   └───────────────────────────┘
-                                          │
-                                          ▼
-                             ┌────────────────────────┐
-                             │ Alert Dispatcher       │
-                             │ - Telegram/E-mail/etc  │
-                             └────────────────────────┘
-
+```bash
+controller/     → API REST  
+service/        → Lógica de domínio  
+producer/       → Eventos Kafka enviados  
+consumer/       → Eventos Kafka recebidos  
+config/         → Configurações gerais  
+dto/events/     → Eventos de domínio  
+model/          → Entidades JPA  
+repository/     → Repositórios  
+exception/      → Tratamento de erros  
 ```
 
-## Microserviços e responsabilidades pensados
-
-### ⭐ 1. HealthCheckMonitorService
-
-Executa chamadas periódicas para os health checks:
-
-  - /actuator/health
-  - /actuator/metrics
-
-Detecta:
-
-  - API down
-  - Falha em DB
-  - Falha em Kafka
-
-Publica eventos no tópico:
-
-  - health-alert-events
-
-### ⭐ 2. LagMonitorService
-
-Usa `AdminClient` para:
-
-  - listar offsets
-  - calcular lag acumulado
-  - identificar partições com atraso
-
-Publica eventos no tópico:
-
-  - lag-alert-events
-
-### ⭐ 3. ConsumerPresenceService
-
-Detecta:
-
-  - consumer groups sem membros
-  - consumers que sumiram (rebalanceamento mal-sucedido)
-
-Publica eventos no tópico:
-
-  - consumer-absence-events
-
-### ⭐ 4. Monitor State Manager (core da inteligência do sistema)
-
-Responsável por:
-
-  - armazenar estados de alerta:
-    - última ocorrência
-    - última normalização
-    - estado atual ("OK" | "WARN" | "CRITICAL")
-
-  - evitar alertas duplicados
-
-  - emitir evento de normalização:
-    - service-back-to-normal-events
-
-  - persistência:
-    - Postgres ou Redis para TTL (ideal para estados efêmeros)
-
-  - regra de deduplicação:
-    - “não envia o mesmo alerta se já estiver ativo”
-    - “envia apenas quando sair do estado OK ou voltar para OK”
-
-### ⭐ 5. Alert Dispatcher
-
-Recebe eventos de alerta filtrados
-
-  - Envia via:
-    - Telegram
-    - Email
-    - Webhook
-  - Quando recebe `service-back-to-normal-events`, envia notificação de normalização.
-
-## 🗃️ 3. Persistência
-
-Para estados:
-
-  - Opção A – Redis
-
-    - TTL natural
-    - operações simples
-    - ótimo para estados de alerta
-
-  - Opção B – Postgres
-
-    - histórico de alertas
-    - auditabilidade
-
-## 🧰 4. Tecnologias e libs
-
-| Tema                   | Tecnologia            |
-| ---------------------- | --------------------- |
-| Linguagem              | Java 21               |
-| Build                  | Maven                 |
-| Framework              | Spring Boot 3.x       |
-| Configuração           | Spring Cloud Config   |
-| Observabilidade        | Micrometer + Actuator |
-| Exportação de métricas | Prometheus            |
-| Coleta centralizada    | Grafana               |
-| Mensageria             | Kafka                 |
-| Persistência           | Postgres / Redis      |
-| Testes                 | JUnit + Mockito       |
-
-## 🛠️ 5. Tópicos Kafka da stack de monitoramento
-
-```console
-monitor-health-alerts
-monitor-lag-alerts
-monitor-consumer-presence
-monitor-state-changes
-monitor-normalization
-```
-
-## 🧪 6. Fluxo de Alerta (Exemplo)
-
-Exemplo: Lag de consumo subiu muito
-
-1. LagMonitorService detecta lag anormal
-2. Publica no tópico: monitor-lag-alerts
-3. MonitorStateManager:
-  - verifica estado anterior (OK → CRITICAL)
-  - salva estado no Redis
-  - repassa evento para o AlertDispatcher
-4. AlertDispatcher envia mensagem no Telegram
-5. Quando lag normaliza:
-  - novo evento
-  - estado muda para OK
-  - envia notificação de normalização
-
-## 📦 7. Estrutura de Pastas
-
-### 🛒 Microserviços da Stack de Vendas (Business Domain)
-
-| Serviço                         | Nome pensado         |
-| ------------------------------- | ------------------------ |
-| API Gateway                     | **ecommerce-gateway**    |
-| Catálogo                        | **product-service**      |
-| Estoque                         | **inventory-service**    |
-| Carrinho                        | **cart-service**         |
-| Pedidos                         | **order-service**        |
-| Pagamentos                      | **payment-service**      |
-| Notificações (cliente + vendor) | **notification-service** |
-
-### 🔎 Observability Mesh (Microserviços de Monitoramento)
-
-| Serviço                              | Nome pensado                      |
-| ------------------------------------ | ------------------------------------- |
-| Monitor de Health Check              | **monitor-health-service**            |
-| Monitor de Lag Kafka                 | **monitor-lag-service**               |
-| Monitor de Consumers Ausentes        | **monitor-consumer-presence-service** |
-| Gerenciador de Estado (deduplicador) | **monitor-state-manager**             |
-| Serviço de Notificações de alerta    | **monitor-alert-dispatcher**          |
-
-
-### 🧰 Infraestrutura e Suporte
-
-| Categoria                                           | Nome pensado                          |
-| --------------------------------------------------- | ----------------------------------------- |
-| Configuração Spring Cloud Config                    | **config-server** ou **ecommerce-config** |
-| Kafka + Docker Compose + Infra local                | **ecommerce-infra**                       |
-| Observabilidade (Prometheus + Grafana + dashboards) | **ecommerce-observability-stack**         |
-| Helm Charts ou Deploy K8s                           | **ecommerce-k8s-deploy**                  |
-
-
-### 🧱 Repositórios de Documentação
-
-| Propósito                         | Nome recomendado           |
-| --------------------------------- | -------------------------- |
-| Documentação técnica geral        | **ecommerce-docs**         |
-| Diagramas (C4, fluxo, sequências) | **ecommerce-architecture** |
-
-## 🎯 8. Sugestão final de estrutura (melhor prática)
-
-```console
-
-ecommerce-observability-platform/
-│
-├── ecommerce-stack/
-│   ├── ecommerce-gateway/
-│   ├── product-service/
-│   ├── inventory-service/
-│   ├── cart-service/
-│   ├── order-service/
-│   ├── payment-service/
-│   └── notification-service/
-│
-├── monitoring-stack/
-│   ├── monitor-health-service/
-│   ├── monitor-lag-service/
-│   ├── monitor-consumer-presence-service/
-│   ├── monitor-state-manager/
-│   └── monitor-alert-dispatcher/
-│
-├── infra-stack/
-|   ├── ecommerce-infra
-|   ├── ecommerce-observability-stack
-|   └── ecommerce-architecture
-|   
-└── docs/
-    ├── diagrams/s
-    └── readmes/
-    
-```
-
-## 🚀 9. Resultado Final
-
-A ideia é obterno final:
-
-✔ Uma simulação completa de eCommerce
-
-✔ Toda a comunicação por eventos (Kafka)
-
-✔ Microserviços independentes
-
-✔ Uma malha de observabilidade inteligente
-
-✔ Deduplicação de alertas
-
-✔ Notificação e normalização
-
-✔ Estado persistido e analisável
-
-✔ Ideal para estudos de DevOps + SRE + Arquitetura Distribuída
-
-
+Com:
+
+  - pom.xml com dependências padrão
+  - application.yml
+  - Dockerfile
+  - Script de execução local
+  - Estrutura package-safe
+  - Classe principal mapeada
+
+
+## 7. 🧭 Roadmap Básico (Execução do Projeto)
+
+- [x] Fase 1 — Fundamentos 
+    - [x] Configuração do monorepo
+    - [x] Definição da arquitetura
+    - [x] Criação do SkyFolder
+    - [x] Implementação do product-service
+    - [x] Implementação do inventory-service
+    - [x] Gateway configurado
+
+- [ ] Ampliação do Fluxo de Negócio ~ Em andamento
+    - [ ] cart-service
+    - [ ] order-service
+    - [ ] payment-service
+    - [ ] notification-service
+    - [ ] Criação dos principais eventos de domínio
+
+- [ ] Fase 3 — Observability Mesh
+    - [ ] monitor-lag-service
+    - [ ] monitor-health-service
+    - [ ] monitor-consumer-presence
+    - [ ] monitor-state-manager
+    - [ ] monitor-alert-dispatcher
+
+- [ ] Fase 4 — Melhoria Contínua
+    - [ ] Testcontainers por serviço
+    - [ ] Automação CI/CD
+    - [ ] Métricas específicas Kafka
+    - [ ] Painéis Grafana
+    - [ ] Documentação
