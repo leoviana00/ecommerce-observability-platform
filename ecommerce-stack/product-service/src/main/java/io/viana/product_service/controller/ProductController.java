@@ -30,24 +30,26 @@ public class ProductController {
     // Injeção do serviço, onde a lógica de negócio real reside.
     private final ProductService service;
 
-    // Criar produto
+    // --- Endpoints CRUD Básicos e de Consulta ---
+
     /**
      * Mapeia requisições HTTP POST para a URI base: POST /products
-     * É usado para criar um novo recurso (produto).
+     * Cria um novo recurso (produto).
      * @param dto O corpo da requisição é mapeado para o objeto ProductDTO (@RequestBody).
-     * @return 200 OK com o ProductEntity criado no corpo.
+     * @return Resposta 200 OK com o ProductEntity criado no corpo.
+     *
+     * Nota: O serviço deve persistir o produto no DB e publicar um evento Kafka de "Produto Criado".
      */
     @PostMapping
     public ResponseEntity<ProductEntity> createProduct(@RequestBody ProductDTO dto) {
         ProductEntity created = service.createProduct(dto);
-        // O serviço aqui deve salvar no DB E publicar um evento Kafka de "Produto Criado"
         return ResponseEntity.ok(created);
     }
 
-    // Listar todos
     /**
      * Mapeia requisições HTTP GET para a URI base: GET /products
-     * @return 200 OK com uma lista de todos os produtos.
+     * Lista todos os produtos no catálogo.
+     * @return Resposta 200 OK com uma lista de todos os produtos.
      */
     @GetMapping
     public ResponseEntity<List<ProductEntity>> listAll() {
@@ -55,26 +57,26 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
-    // Buscar por ID
     /**
      * Mapeia requisições HTTP GET para a URI com um caminho variável: GET /products/{id}
+     * Busca um produto específico pelo ID.
      * @param id O valor do ID na URI é extraído para a variável 'id' (@PathVariable).
-     * @return 200 OK se encontrado, ou 404 Not Found se não existir.
+     * @return Resposta 200 OK se o produto for encontrado, ou 404 Not Found caso contrário.
      */
     @GetMapping("/{id}")
     public ResponseEntity<ProductEntity> getById(@PathVariable Long id) {
         return service.findById(id)
-                // Se o Optional contiver um produto, retorna 200 OK.
+                // Se o Optional contiver um produto, usa o método estático 'ok' para retornar 200 OK.
                 .map(ResponseEntity::ok)
-                // Caso contrário (vazio), retorna 404 Not Found.
+                // Caso contrário (Optional vazio), retorna 404 Not Found.
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Buscar por nome (query param)
     /**
      * Mapeia requisições HTTP GET com um parâmetro de consulta: GET /products/search?name=valor
+     * Busca produtos por nome (ou parte do nome).
      * @param name O valor do parâmetro 'name' na URL é extraído (@RequestParam).
-     * @return 200 OK com uma lista de produtos que correspondem ao nome.
+     * @return Resposta 200 OK com uma lista de produtos que correspondem ao nome.
      */
     @GetMapping("/search")
     public ResponseEntity<List<ProductEntity>> searchByName(@RequestParam String name) {
@@ -82,16 +84,16 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
-    // Produtos disponíveis (estoque > 0)
     /**
      * Mapeia requisições HTTP GET para: GET /products/available
-     * Este é um endpoint customizado que representa uma consulta de negócio específica.
-     * @return 200 OK com a lista de produtos considerados disponíveis.
+     * Este é um endpoint customizado para buscar produtos 'disponíveis'.
+     * @return Resposta 200 OK com a lista de produtos considerados disponíveis.
+     *
+     * Nota: Em um sistema de microserviços, este método deve, idealmente, consultar
+     * o 'inventory-service' para determinar a real disponibilidade de estoque.
      */
     @GetMapping("/available")
     public ResponseEntity<List<ProductEntity>> availableProducts() {
-        // Nota: Em um sistema de microserviços real, esta consulta provavelmente
-        // envolveria uma chamada para o 'inventory-service' para verificar o estoque.
         List<ProductEntity> products = service.findAvailableProducts();
         return ResponseEntity.ok(products);
     }
