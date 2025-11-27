@@ -14,8 +14,8 @@ spring:
   jpa:
     hibernate:
       # Estratégia de geração/atualização do esquema do DB:
-      # 'update' tenta atualizar as tabelas existentes; 'create-drop' recria o DB a cada inicialização.
-      ddl-auto: update
+      # 'create-drop' garante que o DB seja recriado (e zerado) a cada inicialização.
+      ddl-auto: create-drop # <-- CORREÇÃO AQUI
     # Exibe as instruções SQL geradas pelo Hibernate no console
     show-sql: true
     properties:
@@ -68,3 +68,6 @@ logging:
     org.springframework.kafka: DEBUG
     # Nível de log detalhado para os seus pacotes (onde está o código da aplicação)
     io.viana.product_service: DEBUG
+    org.springframework.kafka.listener.KafkaMessageListenerContainer: WARN
+    org.apache.kafka.clients.consumer.ConsumerRecords: INFO
+    org.apache.kafka.clients.consumer.NetworkClient: WARN
