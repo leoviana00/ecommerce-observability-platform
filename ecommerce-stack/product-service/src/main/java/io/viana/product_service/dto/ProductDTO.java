@@ -1,26 +1,26 @@
 package io.viana.product_service.dto;
 
 /**
- * ProductDTO (Data Transfer Object)
+ * ProductDTO (Java Record)
  *
- * É um objeto de transferência de dados, usado para:
- * 1. Receber dados de entrada (payload) de requisições HTTP (ex: no método POST do Controller).
- * 2. Enviar dados de saída como resposta HTTP.
+ * Um Data Transfer Object (DTO) usado para receber dados de entrada
+ * (Payload) ao criar um novo produto.
  *
- * O uso de DTOs desacopla a comunicação externa (API) dos modelos de banco de dados (ProductEntity).
- *
- * O 'record' do Java (disponível a partir do Java 16) é uma forma concisa de criar classes
- * de dados imutáveis (read-only), reduzindo a necessidade de código boilerplate (getters, equals, hashCode).
+ * Utiliza o recurso 'record' do Java (a partir do Java 16),
+ * que é ideal para classes que apenas transportam dados.
  */
 public record ProductDTO(
-        // Identificador do produto (pode ser opcional na criação, mas útil na atualização)
-        Long id,
-        // Nome do produto (Campo obrigatório)
+        // Nome do produto (Campo obrigatório para catálogo)
         String name,
-        // Descrição detalhada do produto
+
+        // Descrição do produto (Pode ser opcional dependendo da regra de negócio)
         String description,
-        // Preço de venda do produto
+
+        // Preço unitário do produto (Campo obrigatório para catálogo)
         Double price,
-        // Quantidade em estoque (Pode ser usado na criação, mas o controle fica, idealmente, no Inventory Service)
-        Integer stock
+
+        // Estoque inicial.
+        // É o valor que será enviado em um evento para o 'inventory-service'
+        // após a criação bem-sucedida do produto no 'product-service'.
+        Integer initialStock
 ) {}
