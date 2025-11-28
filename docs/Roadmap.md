@@ -1,38 +1,68 @@
-## 🚀 Atividades 
+## 🚀 Roadmap 
 
-## 📦 Desenvolvimento dos serviços - Stack Ecommerce
+## 📦 Desenvolvimento dos Serviços – Stack Ecommerce
 
-- [x] [ecommerce-gateway: API Gateway, ponto de entrada do cliente.](./ecommerce-stack/ecommerce-gateway.md)
-- [x] [product-service: base de tudo, todos os outros serviços consultam produtos](./ecommerce-stack/product-service.md)
-- [x] [inventory-service: depende do product; usado por cart, order, payment](./ecommerce-stack/inventory-service.md)
-- [ ] [cart-service: depende de product + inventory](./ecommerce-stack/cart-service.md)
-- [ ] [order-service: depende de cart + product + inventory](./ecommerce-stack/order-service.md)
-- [ ] [payment-service: depende de order](./ecommerce-stack/payment-service.md)
-- [ ] [notification-service: depende de order/payment (eventos)](./ecommerce-stack/notification-service.md)
+| Serviço              | Status      | Descrição                                              |
+| -------------------- | ----------- | ------------------------------------------------------ |
+| ecommerce-gateway    | ✔ Concluído | API Gateway / entrypoint                               |
+| product-service      | ✔ Concluído | CRUD + Kafka: product-created                          |
+| inventory-service    | ✔ Concluído | Estoque + reservas + eventos                           |
+| cart-service         | ✔ Concluído | Carrinho integrado ao inventory                        |
+| order-service        | ✔ Concluído | Criação de pedido + SAGA: order-created/order-paid     |
+| payment-service      | ✔ Concluído | Consumidor de order-created + payment-processed/failed |
+| notification-service | ⏳ A Fazer   | Consumir order-paid e enviar notificações              |
 
-## Orquestração do fluxo
+## 🔁 Orquestração do Fluxo (SAGA Ecommerce)
 
-- Uma vez que cada serviço básico esteja rodando:
+- [x] Criar produto
 
-- [ ] Testar o fluxo completo do cliente até o pedido:
-  - Cliente visualiza produtos (product-service).
-  - Adiciona ao carrinho (cart-service).
-  - Cria pedido (order-service), decrementa estoque (inventory-service).
-  - Processa pagamento (payment-service).
-  - Notifica o cliente (notification-service).
+- [x] Inventário inicial via Kafka
+
+- [x] Adicionar itens ao carrinho
+
+- [x] Criar pedido (publica order-created)
+
+- [x] Processar pagamento (payment-service)
+
+- [x] Atualizar pedido (order-service)
+
+- [x] Aplicar SAGA completa integrando inventory → order-paid
+
+- [ ] Integrar notification-service (evento order-paid)
+
+## 📊 Desenvolvimento dos Serviços – Stack Monitoring
+
+| Serviço                           | Status    |
+| --------------------------------- | --------- |
+| monitor-health-service            | ⏳ A Fazer |
+| monitor-lag-service               | ⏳ A Fazer |
+| monitor-consumer-presence-service | ⏳ A Fazer |
+| monitor-state-manager             | ⏳ A Fazer |
+| monitor-alert-dispatcher          | ⏳ A Fazer |
 
 
-## 📊 Desenvolvimento dos serviços - Stack Monitoring
+## 🏗️ Preparação do Ambiente – Stack Infraestrutura
 
-- [ ] [monitor-health-service](./monitoring-stack/monitor-health-service.md)
-- [ ] [monitor-lag-service](./monitoring-stack/monitor-lag-service.md)
-- [ ] [monitor-consumer-presence-service](./monitoring-stack/monitor-consumer-presence-service.md)
-- [ ] [monitor-state-manager](./monitoring-stack/monitor-state-manager.md)
-- [ ] [monitor-alert-dispatcher](./monitoring-stack/monitor-alert-dispatcher.md)
+| Componente                                                       | Status          |
+| ---------------------------------------------------------------- | --------------- |
+| ecommerce-infra (Docker, Kafka, Zookeeper, DB)                   | ⏳ Em Construção|
+| ecommerce-observability-stack (Prometheus, Grafana, Loki, Tempo) | ⏳ A Fazer      |
+| ecommerce-architecture (Diagramas + doc infra)                   | ✔ Concluído     |
 
+## 🔧 Melhorias Técnicas (Checklist rápido)
 
-## 🏗️ Preparando o ambiente - Stack Infraestrutura
+- [x] Erros padronizados com @RestControllerAdvice
 
-- [ ] [ecommerce-infra](./infra-stack/ecommerce-infra.md)
-- [ ] [ecommerce-observability-stack](./infra-stack/ecommerce-observability-stack.md)
-- [ ] [ecommerce-architecture](./infra-stack/ecommerce-architecture.md)
+- [x] Eventos Kafka padronizados com DTOs dedicados
+
+- [x] Order-service integrado ao payment-service
+
+- [ ] Implementar idempotência completa (order/payment/inventory)
+
+- [ ] Criar DLQs e retries customizados Kafka
+
+- [ ] Integrar preço real via product-service
+
+- [ ] Criar métricas customizadas (Prometheus)
+
+- [ ] Gerar documentação OpenAPI (Swagger)
