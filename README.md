@@ -1,38 +1,69 @@
-## 📦 ecommerce-observability-platform
-Plataforma basica de e-commerce orientada a eventos, desenvolvida em Java + Spring Boot, integrada a um ecossistema de monitoramento distribuído composto por microserviços especializados (health check, lag, consumidores ausentes, gestão de estado e despacho de alertas).
+# 📦 ecommerce-observability-platform
+
+Plataforma modular de e-commerce orientada a eventos, construída em Java 21 + Spring Boot 3, seguindo padrões de arquitetura distribuída, mensageria com Apache Kafka, observabilidade avançada (metrics, logs, traces) e princípios de resiliência.
+
+O objetivo é demonstrar uma arquitetura completa composta por:
+  - `ecommerce-stack`: microserviços funcionais (gateway, produtos, estoque, carrinho, pedidos, pagamentos).
+  - `monitoring-stack`: serviços especializados em observabilidade, saúde do ecossistema e despacho automático de alertas.
+  - `infra-stack`: infraestrutura, templates de deploy e componentes de suporte.
+  - `docs`: documentação, diagramas C4, fluxos e padrões da plataforma.
+
+A plataforma foi projetada para ser extensível, observável e totalmente orientada a eventos, permitindo experimentação com SAGA, idempotência, tolerância a falhas e rastreamento distribuído.
+
+# 🧭 Visão Geral da Documentação
 
 ## 📌 Planejamento
 
-- [Ideia e planejamento inicial para o projeto](./docs/Planejamento.md)
+Documentos iniciais que fundamentam decisões, requisitos e escopo.
 
-## 🧱 Arquitetura
+[Ideia e planejamento inicial](./docs/Planejamento.md)
 
-- [Arquitetura da stack ecommerce](./docs/ecommerce-stack/ecommerce-architecture.md)
+## 🧱 Arquiteturas
 
-- [Arquitetura da stack de observabilidade](./docs/monitoring-stack/observability-architecture.md)
+🔹 Arquitetura da stack eCommerce
 
-- [Arquitetura da stack de infraestrutura](./docs/infra-stack/ecommerce-infra.md)
+Visão de serviços de domínio e integrações REST + Kafka.
 
-## 📘 SkyFolder  
+- [ecommerce-architecture.md](./docs/ecommerce-stack/ecommerce-architecture.md)
 
-- [Padrão de Microserviços para o projeto eCommerce-Observability](./docs/Skyfolder.md)
+🔹 Arquitetura da stack de Observabilidade
 
-## 🧩 Padronização Kafka
+Fluxo de coleta, correlação, notificação e mecanismos de watchers.
 
-- [Padronização de implementação de Producers e Consumers Kafka em todos os microserviços da plataforma](./docs/Padronizacao_eventos_kafka.md)
+- [observability-architecture.md](./docs/monitoring-stack/observability-architecture.md)
 
-## 🌐 Fluxo - Cliente Pedido
+🔹 Arquitetura da stack de Infraestrutura
 
-- [Fluxo do pedido do produto](./docs/fluxo_pedido.md)
+Componentes infra, deploy local/distribuído e integrações.
+
+- [ecommerce-infra.md](./docs/infra-stack/ecommerce-infra.md)
+
+## 📘 SkyFolder — Padrões do Projeto
+
+Contém diretrizes oficiais de implementação, layout de pastas, convenções e boas práticas para todos os microsserviços:
+
+- [Padrão de Microserviços da plataforma](./docs/Skyfolder.md)
+
+## 🧩 Kafka — Padronização de Eventos
+
+Define padronização de nomenclatura, contratos, versionamento, serialização, validação e estratégias de consumo:
+
+- [Padronização de Producers e Consumers Kafka](./docs/Padronizacao_eventos_kafka.md)
+
+## 🌐 Fluxo — Cliente → Pedido
+
+Documenta fim a fim o fluxo do cliente, desde a criação de produto, ações no carrinho, criação do pedido e SAGA de pagamento:
+
+- [Fluxo completo do pedido](./docs/fluxo_pedido.md)
 
 ## 🚀 Roadmap
 
+Evoluções planejadas da plataforma e etapas futuras:
+
 - [Roadmap inicial](./docs/Roadmap.md)
 
-## 📝 Anotações [Sera removido posteriormente]
+## 🛠 Débitos Técnicos
 
-- [Anotaçõe realizadas durante o estudo](./docs/Note.md)
+Lista organizada de melhorias, otimizações e reestruturações planejadas:
 
-## 🛠 Checklist de débitos técnicos
-
-- [Meus débitos técnicos](./docs/melhorias.md)
+- [Débitos técnicos](./docs/melhorias.md)
