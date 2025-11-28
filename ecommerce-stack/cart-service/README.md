@@ -160,26 +160,3 @@ Validações:
 | H2                   | ✔                                      |
 | Spring Kafka         | opcional (no futuro `cart-checkedout`) |
 
-## 🚀 9. Primeiro passo prático
-
-A próxima ação é gerar o esqueleto do serviço:
-
-```bash
-./generate-service.sh cart-service
-```
-
-Depois ajusto o conteúdo gerado:
-
-```console
-criar entidades
-
-criar repositórios
-
-criar DTOs
-
-criar serviço
-
-criar controller
-
-integração HTTP com inventory-service
-```
