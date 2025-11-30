@@ -28,7 +28,7 @@ spring:
 
   kafka:
     # Endereço dos servidores Kafka (onde o Produtor e o Consumidor se conectarão)
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     
     # --- Configurações do Consumidor Kafka (para ProductEventConsumer) ---
     consumer:
