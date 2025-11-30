@@ -8,13 +8,13 @@ ROOT_DIR=$(pwd)
 
 # Lista de serviços Maven
 MODULES=(
-  "ecommerce-stack/ecommerce-gateway"
-  "ecommerce-stack/product-service"
-  "ecommerce-stack/inventory-service"
-  "ecommerce-stack/cart-service"
-  "ecommerce-stack/order-service"
-  "ecommerce-stack/payment-service"
-  "ecommerce-stack/notification-service"
+  "../../ecommerce-stack/ecommerce-gateway"
+  "../../ecommerce-stack/product-service"
+  "../../ecommerce-stack/inventory-service"
+  "../../ecommerce-stack/cart-service"
+  "../../ecommerce-stack/order-service"
+  "../../ecommerce-stack/payment-service"
+  "../../ecommerce-stack/notification-service"
 )
 
 echo

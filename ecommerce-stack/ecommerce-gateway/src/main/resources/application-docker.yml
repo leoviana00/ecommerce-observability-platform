@@ -1,0 +1,27 @@
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+  application:
+    name: ecommerce-gateway
+
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+
+server:
+  port: 8080
+
+services:
+  product:      ${PRODUCT_SERVICE_URL:lb://product-service}
+  inventory:    ${INVENTORY_SERVICE_URL:lb://inventory-service}
+  cart:         ${CART_SERVICE_URL:lb://cart-service}
+  order:        ${ORDER_SERVICE_URL:lb://order-service}
+  payment:      ${PAYMENT_SERVICE_URL:lb://payment-service}
+  notification: ${NOTIFICATION_SERVICE_URL:lb://notification-service}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

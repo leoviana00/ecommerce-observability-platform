@@ -27,4 +27,4 @@ public class OrderCreatedEvent {
 
     // O momento exato em que o pedido foi criado (útil para auditoria e rastreamento).
     private Long timestamp;
-}s
+}

@@ -20,7 +20,7 @@ spring:
   # --- Configuração do Kafka (Comunicação Assíncrona) ---
   kafka:
     # Endereço dos servidores Kafka (Usado no código)
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     
     # Configurações do Consumidor (Consumer) - Mínimas necessárias para o código
     consumer:
@@ -39,6 +39,7 @@ spring:
 
 server:
   port: 8082
+  
 
 logging:
   level:

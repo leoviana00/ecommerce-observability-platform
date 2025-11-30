@@ -20,6 +20,27 @@ public class PaymentProcessorService {
         log.info("💳 Processando pagamento para orderId={} | valor={}",
                 event.getOrderId(), event.getTotal());
 
+        // =====================================================
+        // 🔥 Regra especial: userId=999 sempre falha (testes)
+        // =====================================================
+        if (event.getUserId() == 999) {
+            PaymentFailedEvent failed = PaymentFailedEvent.builder()
+                    .orderId(event.getOrderId())
+                    .userId(event.getUserId())
+                    .amount(event.getTotal())
+                    .reason("SIMULATED_TEST_FAILURE")
+                    .status("FAILED")
+                    .timestamp(System.currentTimeMillis())
+                    .build();
+
+            producer.sendPaymentFailed(failed);
+            log.warn("❌ Pagamento recusado (simulação userId=999): {}", failed);
+            return;
+        }
+
+        // =====================================================
+        // 💰 Lógica normal do gateway (80% aprovado)
+        // =====================================================
         boolean approved = simulateGateway();
 
         if (approved) {
@@ -37,6 +58,9 @@ public class PaymentProcessorService {
             return;
         }
 
+        // =====================================================
+        // ❌ Pagamento negado aleatoriamente
+        // =====================================================
         PaymentFailedEvent failed = PaymentFailedEvent.builder()
                 .orderId(event.getOrderId())
                 .userId(event.getUserId())
@@ -50,7 +74,8 @@ public class PaymentProcessorService {
         log.warn("❌ Pagamento recusado: {}", failed);
     }
 
+    // 80% aprovado
     private boolean simulateGateway() {
-        return Math.random() > 0.2; // 80% aprovado
+        return Math.random() > 0.2;
     }
 }

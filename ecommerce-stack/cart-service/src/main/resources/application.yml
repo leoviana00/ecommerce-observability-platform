@@ -14,7 +14,7 @@ spring:
     show-sql: true
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     consumer:
       group-id: cart-service-group
       auto-offset-reset: earliest
@@ -22,5 +22,10 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
+services:
+  inventory: ${INVENTORY_SERVICE_URL:http://localhost:8080}
+
+
 server:
   port: 8083
+  
