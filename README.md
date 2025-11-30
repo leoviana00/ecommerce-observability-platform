@@ -50,13 +50,17 @@ Define padronização de nomenclatura, contratos, versionamento, serialização,
 
 - [Padronização de Producers e Consumers Kafka](./docs/Padronizacao_eventos_kafka.md)
 
+## 🚀 Execução (DOCKER + INFRA + APPS)
+
+- [Rodar a stack](./docs/run-local-environment.md)
+
 ## 🌐 Fluxo — Cliente → Pedido
 
 Documenta fim a fim o fluxo do cliente, desde a criação de produto, ações no carrinho, criação do pedido e SAGA de pagamento:
 
 - [Fluxo completo do pedido](./docs/fluxo_pedido.md)
 
-## 🚀 Roadmap
+## 📋 Roadmap
 
 Evoluções planejadas da plataforma e etapas futuras:
 
