@@ -52,7 +52,9 @@ Define padronização de nomenclatura, contratos, versionamento, serialização,
 
 ## 🚀 Execução (DOCKER + INFRA + APPS)
 
-- [Rodar a stack](./docs/run-local-environment.md)
+Configurar e executar toda a plataforma de microservices do projeto ecommerce-observability-platform
+
+- [Executar](./docs/run-local-environment.md)
 
 ## 🌐 Fluxo — Cliente → Pedido
 
