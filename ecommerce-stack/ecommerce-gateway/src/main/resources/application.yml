@@ -2,12 +2,12 @@ server:
   port: 8080
 
 services:
-  product: http://localhost:8081
-  inventory: http://localhost:8082
-  cart: http://localhost:8083
-  order: http://localhost:8084
-  payment: http://localhost:8085
-  notification: http://localhost:8086
+  product: ${PRODUCT_SERVICE_URL:http://localhost:8081}
+  inventory: ${INVENTORY_SERVICE_URL:http://localhost:8082}
+  cart: ${CART_SERVICE_URL:http://localhost:8083}
+  order: ${ORDER_SERVICE_URL:http://localhost:8084}
+  payment: ${PAYMENT_SERVICE_URL:http://localhost:8085}
+  notification: ${NOTIFICATION_SERVICE_URL:http://localhost:8086}
 
 spring:
   cloud:

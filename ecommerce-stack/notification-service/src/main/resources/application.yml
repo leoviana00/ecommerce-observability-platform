@@ -1,9 +1,9 @@
 spring:
   application:
-    name: cart-service
+    name: notification-service
 
   datasource:
-    url: jdbc:h2:mem:cart-servicedb
+    url: jdbc:h2:mem:notification-servicedb
     driverClassName: org.h2.Driver
     username: sa
     password:
@@ -14,18 +14,24 @@ spring:
     show-sql: true
 
   kafka:
-    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    bootstrap-servers: localhost:9092
+
     consumer:
-      group-id: cart-service-group
+      group-id: notification-service
       auto-offset-reset: earliest
+
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
-services:
-  inventory: ${INVENTORY_SERVICE_URL:http://localhost:8080}
-
-
 server:
-  port: 8083
-  
+  port: 8086
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
