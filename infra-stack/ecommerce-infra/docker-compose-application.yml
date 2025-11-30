@@ -1,0 +1,147 @@
+version: "3.9"
+
+services:
+  
+  # ==========================================================
+  # 1. Gateway
+  # ==========================================================
+  ecommerce-gateway:
+    build:
+      context: ../../ecommerce-stack/ecommerce-gateway
+    container_name: ecommerce-gateway
+    depends_on:
+      - product-service
+      - inventory-service
+      - cart-service
+      - order-service
+      - payment-service
+      - notification-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+
+          # -------- URLs corretas dos microserviços -----------
+      PRODUCT_SERVICE_URL: "http://product-service:8081"
+      INVENTORY_SERVICE_URL: "http://inventory-service:8082"
+      CART_SERVICE_URL: "http://cart-service:8083"
+      ORDER_SERVICE_URL: "http://order-service:8084"
+      PAYMENT_SERVICE_URL: "http://payment-service:8085"
+      NOTIFICATION_SERVICE_URL: "http://notification-service:8086"
+      # ------------------------------------------------------
+
+    ports:
+      - "8080:8080"
+    networks:
+      - ecommerce-net
+
+  # ==========================================================
+  # 2. Product Service
+  # ==========================================================
+  product-service:
+    build:
+      context: ../../ecommerce-stack/product-service
+    container_name: product-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+    ports:
+      - "8081:8081"
+    networks:
+      - ecommerce-net
+
+  # ==========================================================
+  # 3. Inventory Service
+  # ==========================================================
+  inventory-service:
+    build:
+      context: ../../ecommerce-stack/inventory-service
+    container_name: inventory-service
+    depends_on:
+      - product-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+    ports:
+      - "8082:8082"
+    networks:
+      - ecommerce-net
+
+  # ==========================================================
+  # 4. Cart Service
+  # ==========================================================
+  cart-service:
+    build:
+      context: ../../ecommerce-stack/cart-service
+    container_name: cart-service
+    depends_on:
+      - product-service
+      - inventory-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      INVENTORY_SERVICE_URL: "http://inventory-service:8082"
+    ports:
+      - "8083:8083"
+    networks:
+      - ecommerce-net
+
+  # ==========================================================
+  # 5. Order Service
+  # ==========================================================
+  order-service:
+    build:
+      context: ../../ecommerce-stack/order-service
+    container_name: order-service
+    depends_on:
+      - cart-service
+      - product-service
+      - inventory-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+    ports:
+      - "8084:8084"
+    networks:
+      - ecommerce-net
+
+  # ==========================================================
+  # 6. Payment Service
+  # ==========================================================
+  payment-service:
+    build:
+      context: ../../ecommerce-stack/payment-service
+    container_name: payment-service
+    depends_on:
+      - order-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+    ports:
+      - "8085:8085"
+    networks:
+      - ecommerce-net
+
+  # ==========================================================
+  # 7. Notification Service
+  # ==========================================================
+  notification-service:
+    build:
+      context: ../../ecommerce-stack/notification-service
+    container_name: notification-service
+    depends_on:
+      - payment-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+    ports:
+      - "8086:8086"
+    networks:
+      - ecommerce-net
+
+# ==========================================================
+# Rede compartilhada com o docker-compose-infra
+# ==========================================================
+networks:
+  ecommerce-net:
+    external:
+      name: ecommerce-infra_ecommerce-net
