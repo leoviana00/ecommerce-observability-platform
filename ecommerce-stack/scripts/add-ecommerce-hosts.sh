@@ -10,6 +10,7 @@ declare -A HOSTS=(
   ["payment-service"]="127.0.0.1"
   ["notification-service"]="127.0.0.1"
   ["ecommerce-gateway"]="127.0.0.1"
+  ["kafka"]="127.0.0.1"
 )
 
 echo "=== Adicionando Hosts do Ecommerce (se não existirem) ==="
