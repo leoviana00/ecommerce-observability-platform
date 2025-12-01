@@ -1,6 +1,6 @@
-## 🚀 Roadmap 
+# 🚀 Roadmap 
 
-## 📦 Desenvolvimento dos Serviços – Stack Ecommerce
+# 📦 Desenvolvimento dos Serviços – Stack Ecommerce
 
 | Serviço              | Status      | Descrição                                              |
 | -------------------- | ----------- | ------------------------------------------------------ |
@@ -30,7 +30,7 @@
 
 - [ ] Integrar notification-service (evento order-paid)
 
-## 📊 Desenvolvimento dos Serviços – Stack Monitoring
+# 📊 Desenvolvimento dos Serviços – Stack Monitoring
 
 | Serviço                           | Status    |
 | --------------------------------- | --------- |
@@ -39,6 +39,50 @@
 | monitor-consumer-presence-service | ⏳ A Fazer |
 | monitor-state-manager             | ⏳ A Fazer |
 | monitor-alert-dispatcher          | ⏳ A Fazer |
+
+## 1. Fundamentos da Mesh
+
+- [ ] Criar contratos JSON
+
+- [ ] Criar monitor-state-manager
+
+- [ ] Criar armazenamento Redis
+
+- [ ] Criar mecanismo de deduplicação
+
+- [ ] Criar monitor-alert-dispatcher básico (Telegram)
+
+## 2. Monitores Ativos
+
+- [ ] Criar monitor-health-service
+
+- [ ] Criar monitor-lag-service
+
+- [ ] Criar monitor-consumer-presence-service
+
+- [ ] Conectar todos ao state-manager
+
+- [ ] Configurar thresholds e severidades
+
+## 3. Integração com eCommerce
+
+- [ ] Adicionar Actuator para todos os serviços do eCommerce
+
+- [ ] Criar dashboard Grafana com health metrics
+
+- [ ] Criar alertas avançados por tópico
+
+## 4. Hardening & Experimentos
+
+- [ ] Testcontainers para simular falhas
+
+- [ ] Chaos engineering leve
+
+- [ ] Regras avançadas de deduplicação
+
+- [ ] Métricas Kafka específicas (lag velocity)
+
+- [ ] Documentação completa
 
 
 ## 🏗️ Preparação do Ambiente – Stack Infraestrutura
