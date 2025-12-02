@@ -1,0 +1,25 @@
+{
+  "title": "Prometheus - Overview",
+  "uid": "prom-over",
+  "schemaVersion": 38,
+  "tags": ["metrics"],
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Scrape Failures",
+      "targets": [
+        { "datasource": "Prometheus", "expr": "sum(scrape_duration_seconds{job=\"prometheus\"})" }
+      ],
+      "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 }
+    },
+    {
+      "type": "graph",
+      "title": "Targets",
+      "targets": [
+        { "datasource": "Prometheus", "expr": "up" }
+      ],
+      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 6 }
+    }
+  ]
+}
