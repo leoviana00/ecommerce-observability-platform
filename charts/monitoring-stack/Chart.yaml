@@ -1,0 +1,14 @@
+apiVersion: v2
+name: monitoring-stack
+description: "Helm chart for a monitoring service used in the Observability Mesh (monitoring-stack)"
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+icon: https://raw.githubusercontent.com/helm/helm/main/docs/images/helm-logo.svg
+keywords:
+  - monitoring
+  - observability
+  - actuator
+maintainers:
+  - name: your-team
+    email: infra@example.com

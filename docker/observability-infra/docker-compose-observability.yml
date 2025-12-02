@@ -1,0 +1,175 @@
+version: "3.9"
+
+# ============================================================
+# REDE COMPARTILHADA ENTRE MONITORING E MICROSERVICES
+# ============================================================
+networks:
+  ecommerce-net:
+    external: true
+
+# Para serviços somente de observabilidade
+  monitoring-net:
+    driver: bridge
+
+services:
+
+  # ============================================================
+  # REDIS (estado dos monitores - usado pelo monitor-state-manager)
+  # ============================================================
+  redis:
+    image: redis:7.2
+    container_name: monitor-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - monitoring-net
+
+  # ============================================================
+  # PROMETHEUS – coleta métricas dos monitores e demais serviços
+  # ============================================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring-net
+
+  # ============================================================
+  # GRAFANA – dashboards
+  # ============================================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    depends_on:
+      - prometheus
+      - loki
+      - tempo
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - monitoring-net
+
+  # ============================================================
+  # LOKI – agregação de logs
+  # ============================================================
+  loki:
+    image: grafana/loki:2.9.1
+    container_name: loki
+    volumes:
+      - /home/leoviana/Documentos/improve-skills/projects/ecommerce-observability-platform/docker/observability-infra/loki/loki-config.yml:/etc/loki/config.yml:ro
+      - loki-data:/loki
+    command: -config.file=/etc/loki/config.yml
+    ports:
+      - "3100:3100"
+    networks:
+      - monitoring-net
+
+
+  # ============================================================
+  # PROMTAIL – coleta de logs de containers
+  # ============================================================
+  promtail:
+    image: grafana/promtail:2.9.1
+    container_name: promtail
+    volumes:
+      - /var/log:/var/log
+      - /var/lib/docker/containers:/var/lib/docker/containers
+      - ./promtail/promtail-config.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - monitoring-net
+
+  # ============================================================
+  # TEMPO – coleta de traces (OpenTelemetry)
+  # ============================================================
+  tempo:
+    image: grafana/tempo:2.4.1
+    container_name: tempo
+    volumes:
+      - ./tempo/tempo-config.yml:/etc/tempo/tempo.yml
+      - tempo-data:/var/tempo
+    command: -config.file=/etc/tempo/tempo.yml
+    ports:
+      - "3200:3200"
+    networks:
+      - monitoring-net
+
+  # ============================================================
+  # OTEL COLLECTOR – gateway de traces/metrics/logs
+  # ============================================================
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    container_name: otel-collector
+    volumes:
+      - ./otel/otel-config.yml:/etc/otel/config.yml
+    command: ["--config=/etc/otel/config.yml"]
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+    networks:
+      - monitoring-net
+
+  # ============================================================
+  # ALERTMANAGER – rota de alertas do Prometheus
+  # ============================================================
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager-data:/alertmanager
+    ports:
+      - "9093:9093"
+    networks:
+      - monitoring-net
+
+  # ============================================================
+  # BLACKBOX EXPORTER – monitoramento externo HTTP/TCP/ICMP
+  # ============================================================
+  blackbox:
+    image: prom/blackbox-exporter:latest
+    container_name: blackbox
+    volumes:
+      - ./blackbox/blackbox.yml:/etc/blackbox_exporter/config.yml
+    ports:
+      - "9115:9115"
+    networks:
+      - monitoring-net
+
+
+  # ============================================================
+  # NODE EXPORTER – métricas do host
+  # ============================================================
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    pid: host
+    network_mode: host
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+
+# =========================================================================================
+# VOLUMES
+# =========================================================================================
+volumes:
+  redis-data:
+  prometheus-data:
+  grafana-data:
+  loki-data:
+  tempo-data:
+  alertmanager-data:

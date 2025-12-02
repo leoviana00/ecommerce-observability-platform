@@ -1,0 +1,65 @@
+{
+  "title": "Observability Suite",
+  "uid": "obs-suite",
+  "schemaVersion": 38,
+  "tags": ["observability"],
+  "time": { "from": "now-15m", "to": "now" },
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Services Up",
+      "targets": [
+        { "datasource": "Prometheus", "expr": "sum(up)" }
+      ],
+      "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 }
+    },
+    {
+      "type": "stat",
+      "title": "Requests/s",
+      "targets": [
+        { "datasource": "Prometheus", "expr": "sum(rate(http_requests_total[1m]))" }
+      ],
+      "gridPos": { "x": 4, "y": 0, "w": 4, "h": 4 }
+    },
+    {
+      "type": "stat",
+      "title": "Error 5xx",
+      "targets": [
+        { "datasource": "Prometheus", "expr": "sum(rate(http_requests_total{status=~\"5..\"}[1m]))" }
+      ],
+      "gridPos": { "x": 8, "y": 0, "w": 4, "h": 4 }
+    },
+    {
+      "type": "graph",
+      "title": "Requests per Second",
+      "targets": [
+        { "datasource": "Prometheus", "expr": "sum(rate(http_requests_total[1m]))" }
+      ],
+      "gridPos": { "x": 0, "y": 4, "w": 8, "h": 6 }
+    },
+    {
+      "type": "graph",
+      "title": "Errors (5xx/4xx)",
+      "targets": [
+        { "datasource": "Prometheus", "expr": "sum(rate(http_requests_total{status=~\"5..\"}[1m]))", "legendFormat": "5xx" },
+        { "datasource": "Prometheus", "expr": "sum(rate(http_requests_total{status=~\"4..\"}[1m]))", "legendFormat": "4xx" }
+      ],
+      "gridPos": { "x": 8, "y": 4, "w": 8, "h": 6 }
+    },
+    {
+      "type": "logs",
+      "title": "Logs",
+      "datasource": "Loki",
+      "targets": [
+        { "expr": "{job=~\".*\"}", "refId": "A" }
+      ],
+      "gridPos": { "x": 0, "y": 10, "w": 8, "h": 8 }
+    },
+    {
+      "type": "trace",
+      "title": "Traces",
+      "datasource": "Tempo",
+      "gridPos": { "x": 8, "y": 10, "w": 8, "h": 8 }
+    }
+  ]
+}

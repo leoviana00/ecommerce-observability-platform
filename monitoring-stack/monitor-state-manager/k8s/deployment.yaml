@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monitor-state-manager
+  labels:
+    app: monitor-state-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: monitor-state-manager
+  template:
+    metadata:
+      labels:
+        app: monitor-state-manager
+    spec:
+      containers:
+        - name: monitor-state-manager
+          image: monitor-state-manager:1.0.0
+          envFrom:
+            - configMapRef:
+                name: monitor-state-manager-config
+            - secretRef:
+                name: monitor-state-manager-secret
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10

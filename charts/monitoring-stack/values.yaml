@@ -1,0 +1,83 @@
+# Default values for monitoring-stack Helm chart.
+# These are sane defaults — override per-environment or per-release.
+
+replicaCount: 1
+
+image:
+  repository: myregistry/monitoring-service
+  tag: "1.0.0"
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+  annotations: {}
+
+env: {}
+# Example:
+# env:
+#   LOG_LEVEL: "INFO"
+#   MONITOR_INTERVAL_SECONDS: "15"
+
+config:
+  LOG_LEVEL: "INFO"
+  MONITOR_INTERVAL_SECONDS: "15"
+
+secret:
+  # Use stringData via template; do not keep sensitive values in git.
+  # Override in CI/values-secret.yaml or via helm --set-file.
+  GENERIC_API_KEY: ""
+
+resources:
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+
+livenessProbe:
+  enabled: true
+  path: /actuator/health
+  port: 8080
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  timeoutSeconds: 2
+  failureThreshold: 3
+
+readinessProbe:
+  enabled: true
+  path: /actuator/health
+  port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 2
+  failureThreshold: 3
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+
+ingress:
+  enabled: false
+  annotations: {}
+  hosts:
+    - host: monitoring.example.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+podAnnotations: {}
+podLabels: {}
+
+# Node selector / tolerations if needed:
+nodeSelector: {}
+tolerations: []
+affinity: {}

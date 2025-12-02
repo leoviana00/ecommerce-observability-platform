@@ -1,0 +1,13 @@
+1. Get the application URL by running these commands:
+  export POD_NAME=$(kubectl get pods -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/name={{ include "monitoring-stack.name" . }} -o jsonpath="{.items[0].metadata.name}")
+  echo "Logs: kubectl logs -f \$POD_NAME"
+  echo "Port-forward: kubectl port-forward \$POD_NAME 8080:{{ .Values.service.targetPort }}"
+
+2. Apply manifests (if not using helm):
+   kubectl apply -k ./charts/monitoring-stack/templates/
+
+3. To override secrets:
+   helm upgrade --install {{ .Release.Name }} ./charts/monitoring-stack -n observability \
+     --set secret.GENERIC_API_KEY="your-secret" \
+     --set image.repository="myregistry/monitoring-service" \
+     --set image.tag="1.0.1"

@@ -1,0 +1,14 @@
+{
+  "title": "Tempo Explorer",
+  "uid": "tempo-exp",
+  "schemaVersion": 38,
+  "tags": ["traces"],
+  "panels": [
+    {
+      "type": "trace",
+      "title": "Trace Explorer",
+      "datasource": "Tempo",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 20 }
+    }
+  ]
+}

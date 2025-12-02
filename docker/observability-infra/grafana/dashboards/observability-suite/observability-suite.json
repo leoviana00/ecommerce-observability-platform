@@ -1,0 +1,141 @@
+{
+  "title": "Observability Suite - Metrics, Logs & Traces",
+  "uid": "obs-suite",
+  "schemaVersion": 38,
+  "tags": ["observability", "logs", "metrics", "traces"],
+  "editable": true,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Services Up",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "sum(up)",
+          "legendFormat": "up"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 }
+    },
+    {
+      "type": "stat",
+      "title": "Requests per Second",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "sum(rate(http_requests_total[1m]))",
+          "legendFormat": "req/s"
+        }
+      ],
+      "gridPos": { "x": 4, "y": 0, "w": 4, "h": 4 }
+    },
+    {
+      "type": "stat",
+      "title": "Error Rate (5xx)",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "sum(rate(http_requests_total{status=~\"5..\"}[1m]))",
+          "legendFormat": "5xx"
+        }
+      ],
+      "gridPos": { "x": 8, "y": 0, "w": 4, "h": 4 }
+    },
+    {
+      "type": "stat",
+      "title": "Latency P95",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[1m])) by (le))",
+          "legendFormat": "p95"
+        }
+      ],
+      "gridPos": { "x": 12, "y": 0, "w": 4, "h": 4 }
+    },
+    {
+      "type": "graph",
+      "title": "Requests per Second",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "sum(rate(http_requests_total[1m]))",
+          "legendFormat": "req/s"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 4, "w": 8, "h": 6 }
+    },
+    {
+      "type": "graph",
+      "title": "Error Rate (5xx/4xx)",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "sum(rate(http_requests_total{status=~\"5..\"}[1m]))",
+          "legendFormat": "5xx"
+        },
+        {
+          "datasource": "Prometheus",
+          "expr": "sum(rate(http_requests_total{status=~\"4..\"}[1m]))",
+          "legendFormat": "4xx"
+        }
+      ],
+      "gridPos": { "x": 8, "y": 4, "w": 8, "h": 6 }
+    },
+    {
+      "type": "graph",
+      "title": "Latency P95/P99",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[1m])) by (le))",
+          "legendFormat": "p95"
+        },
+        {
+          "datasource": "Prometheus",
+          "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[1m])) by (le))",
+          "legendFormat": "p99"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 10, "w": 16, "h": 6 }
+    },
+    {
+      "type": "table",
+      "title": "Active Alerts",
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "ALERTS{alertstate=\"firing\"}"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 16, "w": 8, "h": 6 }
+    },
+    {
+      "type": "logs",
+      "title": "Logs",
+      "datasource": "Loki",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{job=~\".*\"}"
+        }
+      ],
+      "gridPos": { "x": 8, "y": 16, "w": 8, "h": 6 }
+    },
+    {
+      "type": "trace",
+      "title": "Traces - Tempo",
+      "datasource": "Tempo",
+      "gridPos": { "x": 0, "y": 22, "w": 16, "h": 10 },
+      "options": {
+        "spanBar": {
+          "type": "service"
+        }
+      }
+    }
+  ],
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  }
+}

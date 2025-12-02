@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: monitor-state-manager-config
+data:
+  LOG_LEVEL: "INFO"
+  MONITOR_INTERVAL_SECONDS: "15"

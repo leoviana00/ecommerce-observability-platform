@@ -1,0 +1,232 @@
+{
+  "id": null,
+  "uid": "ecom-observability-1",
+  "title": "Ecommerce Observability - Full Stack",
+  "tags": ["ecommerce","observability","monitoring"],
+  "timezone": "browser",
+  "schemaVersion": 36,
+  "version": 1,
+  "refresh": "10s",
+  "panels": [
+    {
+      "type": "row",
+      "title": "Overview",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+      "id": 1,
+      "collapsed": false
+    },
+    {
+      "type": "stat",
+      "title": "Services Last Known Status",
+      "id": 2,
+      "gridPos": {"h": 6, "w": 8, "x": 0, "y": 1},
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "max_over_time(service_health_up{service=~\"$service\"}[5m])",
+          "legendFormat": "{{service}}",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "orientation": "auto",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Response Time (ms)",
+      "id": 3,
+      "gridPos": {"h": 6, "w": 16, "x": 8, "y": 1},
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "service_response_time_ms_bucket{service=~\"$service\"}",
+          "legendFormat": "p99 {{service}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "logs",
+      "title": "Logs - Recent (Loki)",
+      "id": 4,
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 7},
+      "datasource": "Loki",
+      "targets": [
+        {
+          "expr": "{app=~\"$service\"}",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showLabels": true,
+        "wrapLogMessage": true
+      }
+    },
+    {
+      "type": "table",
+      "title": "Log Volume Heatmap (by minute)",
+      "id": 5,
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 7},
+      "datasource": "Loki",
+      "targets": [
+        {
+          "expr": "count_over_time({app=~\"$service\"}[1m])",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "CPU Usage (node_exporter)",
+      "id": 6,
+      "gridPos": {"h": 6, "w": 8, "x": 0, "y": 15},
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(rate(node_cpu_seconds_total{mode!=\"idle\"}[5m])) by (instance)",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Memory Available (node_exporter)",
+      "id": 7,
+      "gridPos": {"h": 6, "w": 8, "x": 8, "y": 15},
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "node_memory_MemAvailable_bytes",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Active Alerts (Alertmanager)",
+      "id": 8,
+      "gridPos": {"h": 6, "w": 8, "x": 16, "y": 15},
+      "datasource": "Alertmanager",
+      "targets": [
+        {
+          "expr": "",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showTime": true
+      }
+    },
+    {
+      "type": "trace",
+      "title": "Traces - Tempo (Service Traces)",
+      "id": 9,
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 21},
+      "datasource": "Tempo",
+      "targets": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Orders per Minute",
+      "id": 10,
+      "gridPos": {"h": 6, "w": 12, "x": 12, "y": 21},
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(ecommerce_orders_total[1m])",
+          "legendFormat": "orders",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "barGauge",
+      "title": "Cart Abandonment Rate",
+      "id": 11,
+      "gridPos": {"h": 4, "w": 8, "x": 0, "y": 29},
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "(sum(ecommerce_cart_abandoned_total) / sum(ecommerce_cart_started_total)) * 100",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Payment Failure Rate (5m)",
+      "id": 12,
+      "gridPos": {"h": 4, "w": 8, "x": 8, "y": 29},
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(rate(ecommerce_payment_failures_total[5m])) / sum(rate(ecommerce_payment_requests_total[5m])) * 100",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Services Registry",
+      "id": 13,
+      "gridPos": {"h": 4, "w": 8, "x": 16, "y": 29},
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "up{job=~\"$service\"}",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "type": "datasource",
+        "name": "DS_PROMETHEUS",
+        "label": "Prometheus",
+        "pluginId": "prometheus",
+        "query": "",
+        "hide": 0
+      },
+      {
+        "type": "datasource",
+        "name": "DS_LOKI",
+        "label": "Loki",
+        "pluginId": "loki",
+        "query": "",
+        "hide": 0
+      },
+      {
+        "type": "query",
+        "name": "service",
+        "label": "Service",
+        "datasource": "Prometheus",
+        "query": "label_values(service_health_up, service)",
+        "refresh": 1,
+        "includeAll": true,
+        "multi": true,
+        "allValue": ".*"
+      }
+    ]
+  },
+  "annotations": {
+    "list": [
+      {
+        "name": "Deployments",
+        "datasource": "Prometheus",
+        "iconColor": "#7EB26D",
+        "enable": true,
+        "expr": "kube_deployment_status_replicas_ready"
+      }
+    ]
+  },
+  "time": {"from": "now-1h", "to": "now"},
+  "timepicker": {"refresh_intervals": ["5s", "10s", "30s", "1m", "5m", "15m"]}
+}
