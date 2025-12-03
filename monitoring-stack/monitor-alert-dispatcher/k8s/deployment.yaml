@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monitor-alert-dispatcher
+  labels:
+    app: monitor-alert-dispatcher
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: monitor-alert-dispatcher
+  template:
+    metadata:
+      labels:
+        app: monitor-alert-dispatcher
+    spec:
+      containers:
+        - name: monitor-alert-dispatcher
+          image: monitor-alert-dispatcher:1.0.0
+          envFrom:
+            - configMapRef:
+                name: monitor-alert-dispatcher-config
+            - secretRef:
+                name: monitor-alert-dispatcher-secret
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
