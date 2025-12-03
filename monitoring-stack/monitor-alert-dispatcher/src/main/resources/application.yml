@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: monitor-alert-dispatcher
+
+logging:
+  level:
+    root: INFO
+    io.viana.monitor_alert_dispatcher: DEBUG
+
+# Provisão futura de canais
+alert-dispatcher:
+  telegram:
+    enabled: false
+    bot-token: ""
+    chat-id: ""
+  email:
+    enabled: false
+    from: ""
+    to: ""
+  webhook:
+    enabled: false
+    url: ""
+
+server:
+  port: 8092
