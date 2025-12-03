@@ -1,6 +1,10 @@
 package io.viana.monitor_state_manager.service;
 
-import io.viana.monitor_state_manager.dto.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.viana.monitor_state_manager.dto.ConsumerPresenceDto;
+import io.viana.monitor_state_manager.dto.HealthStateDto;
+import io.viana.monitor_state_manager.dto.LagStateDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.HashOperations;
@@ -15,6 +19,7 @@ import java.util.Map;
 public class StateService {
 
     private final StringRedisTemplate redis;
+    private final ObjectMapper objectMapper; // Spring injeta automaticamente
 
     private HashOperations<String, String, String> ops() {
         return redis.opsForHash();
@@ -36,14 +41,24 @@ public class StateService {
 
     private void processState(String key, Object dto) {
         String previous = ops().get("states", key);
-        String current = dto.toString();
+        String current = toJson(dto);
 
         if (!current.equals(previous)) {
-            log.info("State change detected [{}]: {}", key, current);
+            log.info("State change detected [{}]", key);
             ops().put("states", key, current);
 
-            // FUTURO: enviar evento para o monitor-alert-dispatcher
-            // alertDispatcher.notify(AlertEventDto.builder()...)
+            // Futuro: disparar evento para monitor-alert-dispatcher
+            // ex: alertDispatcher.notify(...)
+        }
+    }
+
+    private String toJson(Object dto) {
+        try {
+            return objectMapper.writeValueAsString(dto);
+        } catch (JsonProcessingException e) {
+            log.error("Error serializing state dto", e);
+            // fallback simples para não quebrar o fluxo
+            return dto.toString();
         }
     }
 

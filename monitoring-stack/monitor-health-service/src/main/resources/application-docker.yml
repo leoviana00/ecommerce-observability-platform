@@ -1,0 +1,2 @@
+monitor:
+  default-json-resource: "defaults/targets.json"

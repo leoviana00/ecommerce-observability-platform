@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monitor-health-service
+  labels:
+    app: monitor-health-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: monitor-health-service
+  template:
+    metadata:
+      labels:
+        app: monitor-health-service
+    spec:
+      containers:
+        - name: monitor-health-service
+          image: monitor-health-service:1.0.0
+          envFrom:
+            - configMapRef:
+                name: monitor-health-service-config
+            - secretRef:
+                name: monitor-health-service-secret
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10

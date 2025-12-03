@@ -1,0 +1,76 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2025-12-02T15:30:00Z",
+  "metadata": {
+    "owner": "platform-team",
+    "environment": "production",
+    "refreshIntervalSeconds": 60,
+    "defaultTimeoutMs": 2000,
+    "defaultEnabled": true
+  },
+  "targets": [
+    {
+      "name": "product-service",
+      "url": "http://product-service:8081/actuator/health",
+      "team": "catalog",
+      "enabled": true,
+      "timeoutMs": 2000,
+      "criticality": "high",
+      "tags": ["catalog", "inventory", "public-api"]
+    },
+    {
+      "name": "inventory-service",
+      "url": "http://inventory-service:8082/actuator/health",
+      "team": "warehouse",
+      "enabled": true,
+      "timeoutMs": 2000,
+      "criticality": "high",
+      "tags": ["stock", "inventory"]
+    },
+    {
+      "name": "cart-service",
+      "url": "http://cart-service:8083/actuator/health",
+      "team": "checkout",
+      "enabled": true,
+      "timeoutMs": 2000,
+      "criticality": "high",
+      "tags": ["checkout", "session"]
+    },
+    {
+      "name": "order-service",
+      "url": "http://order-service:8084/actuator/health",
+      "team": "checkout",
+      "enabled": true,
+      "timeoutMs": 2000,
+      "criticality": "high",
+      "tags": ["orders", "workflow"]
+    },
+    {
+      "name": "payment-service",
+      "url": "http://payment-service:8085/actuator/health",
+      "team": "payments",
+      "enabled": true,
+      "timeoutMs": 2000,
+      "criticality": "critical",
+      "tags": ["payments", "finance"]
+    },
+    {
+      "name": "notification-service",
+      "url": "http://notification-service:8086/actuator/health",
+      "team": "platform",
+      "enabled": true,
+      "timeoutMs": 2000,
+      "criticality": "medium",
+      "tags": ["notifications", "email", "sms"]
+    },
+    {
+      "name": "ecommerce-gateway",
+      "url": "http://ecommerce-gateway:8080/actuator/health",
+      "team": "platform",
+      "enabled": true,
+      "timeoutMs": 2000,
+      "criticality": "critical",
+      "tags": ["edge", "api-gateway", "entrypoint"]
+    }
+  ]
+}

@@ -7,5 +7,5 @@ route:
 receivers:
   - name: default-receiver
     webhook_configs:
-      - url: http://monitor-alert-dispatcher:8080/alerts
+      - url: http://monitor-alert-dispatcher:8092/alerts
         max_alerts: 10

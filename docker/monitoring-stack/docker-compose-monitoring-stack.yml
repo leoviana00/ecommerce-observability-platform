@@ -1,0 +1,87 @@
+version: "3.9"
+
+services:
+
+  # ============================================================
+  # monitor-state-manager
+  # ============================================================
+  monitor-state-manager:
+    build:
+      context: ../../monitoring-stack/monitor-state-manager
+    container_name: monitor-state-manager
+    restart: unless-stopped
+
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+
+    ports:
+      - "8090:8090"
+
+    networks:
+      - monitoring-net
+
+
+  # ============================================================
+  # monitor-health-service
+  # ============================================================
+  monitor-health-service:
+    build:
+      context: ../../monitoring-stack/monitor-health-service
+    container_name: monitor-health-service
+    restart: unless-stopped
+
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      MONITOR_LOCAL_JSON_PATH: "/app/config/targets.json"
+      MONITOR_INTERVAL_SECONDS: 15
+      MONITOR_STATE_MANAGER_URL: "http://monitor-state-manager:8090/state/health"
+
+    volumes:
+      - ./config/targets.json:/app/config/targets.json:ro
+
+    ports:
+      - "8091:8091"
+
+    networks:
+      - monitoring-net
+
+    depends_on:
+      - monitor-state-manager
+
+
+  # ============================================================
+  # monitor-alert-dispatcher
+  # ============================================================
+  monitor-alert-dispatcher:
+    build:
+      context: ../../monitoring-stack/monitor-alert-dispatcher
+    container_name: monitor-alert-dispatcher
+    restart: unless-stopped
+
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      STATE_MANAGER_URL: "http://monitor-state-manager:8090/state/events"
+
+      # canais (futuros)
+      ALERT_DISPATCHER_TELEGRAM_ENABLED: "false"
+      ALERT_DISPATCHER_EMAIL_ENABLED: "false"
+      ALERT_DISPATCHER_WEBHOOK_ENABLED: "false"
+
+    ports:
+      - "8092:8092"
+
+    networks:
+      - monitoring-net
+
+    depends_on:
+      - monitor-state-manager
+
+# ============================================================
+# Redes
+# ============================================================
+networks:
+  monitoring-net:
+    external: true
+    name: observability-infra_monitoring-net
