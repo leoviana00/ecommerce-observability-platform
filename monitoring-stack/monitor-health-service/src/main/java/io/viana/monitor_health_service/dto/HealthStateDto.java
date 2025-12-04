@@ -1,15 +1,37 @@
-// monitor-health-service e monitor-state-manager
-package io.viana.monitor_health_service.dto; // ou io.viana.monitor_state_manager.dto
+package io.viana.monitor_health_service.dto;
 
+import io.viana.monitor_health_service.model.HealthStatus;
 import lombok.Builder;
 import lombok.Data;
+
+import java.time.Instant;
 
 @Data
 @Builder
 public class HealthStateDto {
-    private String service;        // ex: product-service
-    private String status;         // UP / DOWN / DEGRADED (se quiser)
-    private long   responseTimeMs; // latência
-    private String timestamp;      // ISO-8601, ex: 2025-12-02T18:40:00Z
-    private String error;          // opcional, motivo do DOWN
+
+    /**
+     * Nome lógico do serviço monitorado (ex: product-service).
+     */
+    private String service;
+
+    /**
+     * Status final da checagem (UP/DOWN/DEGRADED/UNKNOWN).
+     */
+    private HealthStatus status;
+
+    /**
+     * Tempo total de resposta em milissegundos.
+     */
+    private long responseTimeMs;
+
+    /**
+     * Momento em que a checagem foi executada.
+     */
+    private Instant timestamp;
+
+    /**
+     * Motivo do DOWN/DEGRADED, se houver.
+     */
+    private String error;
 }
