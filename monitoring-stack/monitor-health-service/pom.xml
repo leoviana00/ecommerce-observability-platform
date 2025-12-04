@@ -5,6 +5,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- Spring Boot: BOM + plugin management -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -12,32 +13,55 @@
         <relativePath/>
     </parent>
 
+    <!-- Project Metadata -->
     <groupId>io.viana</groupId>
     <artifactId>monitor-health-service</artifactId>
     <version>1.0.0</version>
+    <name>monitor-health-service</name>
 
+    <!-- Java version -->
     <properties>
         <java.version>21</java.version>
     </properties>
 
     <dependencies>
 
-        <!-- Core Spring Boot -->
+        <!-- Core Spring Boot + logging -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
-        <!-- Web + Jackson + RestTemplate -->
+        <!-- REST + Jackson + Servlet -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Actuator (Micrometer + health + metrics) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
         <!-- Validation (jakarta.*) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- Resilience4J core runtime -->
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-core</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+
+        <!-- Resilience4j Boot integration (config, AOP, registries) -->
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-spring-boot3</artifactId>
+            <version>2.2.0</version>
         </dependency>
 
         <!-- Lombok -->
@@ -57,13 +81,36 @@
     </dependencies>
 
 
+    <!-- Build plugins -->
     <build>
         <plugins>
+            <!-- Boot Run / Repackage -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
+            <!-- Java compile configs -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <release>${java.version}</release>
+                    <showWarnings>true</showWarnings>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
+
+    <!-- Management endpoints and details -->
+    <profiles>
+        <profile>
+            <id>actuator-dev</id>
+            <properties>
+                <management.endpoints.web.exposure.include>*</management.endpoints.web.exposure.include>
+            </properties>
+        </profile>
+    </profiles>
 
 </project>

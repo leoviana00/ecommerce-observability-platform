@@ -32,13 +32,24 @@ public class LocalFileTargetsLoader {
         }
 
         try {
-            log.info("Loading targets from local file {}", path);
+            log.info("Loading targets from file {}", path);
 
             File file = new File(path);
+            if (!file.exists()) {
+                log.error("File not found: {}", path);
+                return Collections.emptyList();
+            }
+
             JsonNode json = objectMapper.readTree(file);
 
+            JsonNode targetsNode = json.get("targets");
+            if (targetsNode == null || !targetsNode.isArray()) {
+                log.warn("Missing or invalid 'targets' array");
+                return Collections.emptyList();
+            }
+
             return objectMapper.readerForListOf(HealthTarget.class)
-                    .readValue(json.get("targets"));
+                    .readValue(targetsNode);
 
         } catch (Exception e) {
             log.error("Failed to load targets from {}", path, e);

@@ -1,2 +1,2 @@
 monitor:
-  default-json-resource: "defaults/targets.json"
+  local-json-path: "config/health-targets.json"
