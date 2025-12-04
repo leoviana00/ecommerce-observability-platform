@@ -9,9 +9,7 @@ import java.util.Map;
 public class AlertmanagerWebhookPayload {
 
     private String status;
-    private Map<String, String> labels;
     private Map<String, String> commonLabels;
     private Map<String, String> commonAnnotations;
-    private String externalURL;
     private List<AlertmanagerAlert> alerts;
 }

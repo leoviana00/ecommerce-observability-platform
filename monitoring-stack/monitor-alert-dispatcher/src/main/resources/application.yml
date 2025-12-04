@@ -1,25 +1,29 @@
 spring:
   application:
     name: monitor-alert-dispatcher
+  kafka:
+    bootstrap-servers: kafka:9092
+    consumer:
+      group-id: monitor-alert-dispatcher
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+
+server:
+  port: 8092
 
 logging:
   level:
     root: INFO
     io.viana.monitor_alert_dispatcher: DEBUG
 
-# Provisão futura de canais
-alert-dispatcher:
-  telegram:
-    enabled: false
-    bot-token: ""
-    chat-id: ""
-  email:
-    enabled: false
-    from: ""
-    to: ""
-  webhook:
-    enabled: false
-    url: ""
+telegram:
+  enabled: true
+  bot-token: 
+  chat-id: 
+  timeout-ms: 5000
+  max-retries: 5
 
-server:
-  port: 8092
+state-events:
+  topic: state.events
+
