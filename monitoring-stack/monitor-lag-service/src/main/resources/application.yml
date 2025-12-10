@@ -1,8 +1,27 @@
+server:
+  port: 8093
+
 spring:
   application:
     name: monitor-lag-service
-
-
   kafka:
     bootstrap-servers: kafka:9092
 
+lag-monitor:
+  enabled: true
+  consumer-groups:
+    - ecommerce-gateway-group
+    - product-service-group
+    - inventory-service-group
+    - cart-service-group
+    - order-service-group
+    - payment-service-group
+    - notification-service-group
+  max-lag-threshold: 50
+  poll-interval-ms: 30000
+  topic-name: consumer-lag.events
+
+logging:
+  level:
+    io.viana.monitor_lag_service: INFO
+    org.apache.kafka: WARN
