@@ -1,7 +1,7 @@
 version: "3.9"
 
 # ============================================================
-# REDE COMPARTILHADA ENTRE INFRA E MICROSERVIÇOS
+# REDE COMPARTILHADA
 # ============================================================
 networks:
   ecommerce-net:
@@ -10,7 +10,7 @@ networks:
 services:
 
   # ============================================================
-  # ZOOKEEPER – Necessário para o Kafka (modo ZooKeeper)
+  # ZOOKEEPER (modo legado – compatível com cp-kafka 7.3.x)
   # ============================================================
   zookeeper:
     image: confluentinc/cp-zookeeper:7.3.2
@@ -26,23 +26,8 @@ services:
     networks:
       - ecommerce-net
 
-    # Verifica se a porta 2181 está aberta
-    healthcheck:
-      test: ["CMD", "nc", "-z", "localhost", "2181"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   # ============================================================
-  # KAFKA – Broker principal
-  #
-  # Configurado com dois listeners:
-  #   PLAINTEXT → uso interno entre containers (kafka:9092)
-  #   EXTERNAL  → anunciado como localhost:9092 (via HAProxy)
-  #
-  # Dessa forma:
-  #   - Os serviços no Docker usam kafka:9092
-  #   - Você, na sua máquina, usa localhost:9092
+  # KAFKA – SINGLE NODE (DESENVOLVIMENTO LOCAL)
   # ============================================================
   kafka:
     image: confluentinc/cp-kafka:7.3.2
@@ -52,82 +37,29 @@ services:
       - zookeeper
 
     environment:
-      # ID do broker
       KAFKA_BROKER_ID: 1
-
-      # Conexão com o Zookeeper
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
 
-      # Listeners disponíveis
-      # 1) PLAINTEXT: acessível para outros containers via kafka:9092
-      # 2) EXTERNAL: acessível externamente, mas será mapeado via HAProxy
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,EXTERNAL://0.0.0.0:9093
+      # 2 Listener reais
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,EXTERNAL://0.0.0.0:29092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,EXTERNAL://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
 
-      # Endereços anunciados
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:9092
-
-      # Mapeamento dos protocolos
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
-
-      # Comunicação entre brokers
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-
-      # Fatores de replicação mínimos (ambiente single-node)
+      # Ambiente single-node
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
 
-    # ports:
-      # - "9092:9092" # Listener interno exposto para host (caso queira testar sem proxy)
-      # - "9093:9093" # Listener EXTERNAL (não usado diretamente)
-
-    # volumes:
-    #   - kafka-data:/var/lib/kafka/data
-
-    networks:
-      - ecommerce-net
-
-    # Verifica se o Kafka está aceitando conexões
-    healthcheck:
-      test: ["CMD", "sh", "-c", "nc -z localhost 9092 || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
-  # ============================================================
-  # HAProxy – Faz proxy reverso do Kafka
-  #
-  # Objetivo:
-  #   - Garantir que *localhost:9092* funcione tanto para Docker
-  #     quanto para os serviços rodando no host.
-  # ============================================================
-  haproxy:
-    image: haproxy:2.8
-    container_name: haproxy
-
-    depends_on:
-      - kafka
-
-    # Expondo Kafka via HAProxy
     ports:
       - "9092:9092"
-      - "81:81"
-
-    volumes:
-      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - "29092:29092"
 
     networks:
       - ecommerce-net
 
-    # Verifica se o HAProxy está escutando a porta 9092
-    healthcheck:
-      test: ["CMD", "nc", "-z", "localhost", "9092"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   # ============================================================
-  # Kafka UI – Interface gráfica para visualizar tópicos, lags, offsets etc.
+  # KAFKA UI
   # ============================================================
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -137,7 +69,7 @@ services:
       - kafka
 
     ports:
-      - "8088:8080" # Interface web
+      - "8088:8080"
 
     environment:
       KAFKA_CLUSTERS_0_NAME: local-kafka
@@ -146,7 +78,3 @@ services:
 
     networks:
       - ecommerce-net
-
-# Persistência local do Kafka
-volumes:
-  kafka-data:
