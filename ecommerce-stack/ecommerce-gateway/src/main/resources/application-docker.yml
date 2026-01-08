@@ -6,8 +6,8 @@ spring:
   application:
     name: ecommerce-gateway
 
-  kafka:
-    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+  # kafka:
+  #   bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
 
 server:
   port: 8080
