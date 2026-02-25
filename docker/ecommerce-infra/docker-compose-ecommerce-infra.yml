@@ -1,5 +1,3 @@
-version: "3.9"
-
 # ============================================================
 # REDE COMPARTILHADA
 # ============================================================
@@ -32,7 +30,7 @@ services:
   kafka:
     image: confluentinc/cp-kafka:7.3.2
     container_name: kafka
-
+    restart: unless-stopped
     depends_on:
       - zookeeper
 
